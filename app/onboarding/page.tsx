@@ -18,7 +18,7 @@ export default async function OnboardingPage() {
     <div className="flex min-h-screen flex-col">
       <header className="border-b">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <h1 className="text-xl font-bold">选择您的拼豆颜色套装</h1>
+          <h1 className="text-xl font-bold">拼豆Studio</h1>
         </div>
       </header>
 

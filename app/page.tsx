@@ -7,7 +7,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <header className="border-b">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <h1 className="text-xl font-bold">拼豆库存管理</h1>
+          <h1 className="text-xl font-bold">拼豆Studio</h1>
         </div>
       </header>
 
@@ -15,7 +15,7 @@ export default function Home() {
         <div className="max-w-2xl mx-auto space-y-8">
           <div className="text-center space-y-4">
             <h2 className="text-4xl font-bold tracking-tight">
-              拼豆库存管理
+              拼豆Studio
             </h2>
             <p className="text-lg text-muted-foreground">
               选择您拥有的拼豆颜色套装，我们会为您初始化库存

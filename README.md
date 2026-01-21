@@ -1,26 +1,28 @@
-# 拼豆库存管理 | Perler Beads Inventory Manager
+# 拼豆Studio
 
-A modern web application for managing your perler bead (拼豆) inventory with database synchronization, multi-language support (Chinese/English), and cloud backup.
+专业的拼豆库存管理工具，支持数据库同步和云端备份。
+
+A modern web application for managing your perler bead inventory with database synchronization and cloud backup.
 
 ## Features
 
-- 🎨 **Multi-Brand Support**: Perler, Hama, Artkal, DoDo, and more
-- 🌐 **Bilingual Interface**: Chinese (primary) and English
+- 🎨 **Multi-Brand Support**: Perler, Hama, Artkal, DoDo (279 colors total)
+- 🇨🇳 **Chinese Interface**: Full Chinese language support
 - 📊 **Inventory Management**: Track quantities of 200+ bead colors
 - 🔍 **Search & Filter**: Find colors by code, name, or color set
-- ➕➖ **Quick Adjustments**: Easily add or subtract quantities
+- ➕➖ **Quick Adjustments**: Easily add or subtract quantities with +/-1, +/-5, +/-10 buttons
 - 💾 **Cloud Sync**: Automatic synchronization across devices
 - 📤 **Export/Import**: Backup your inventory as JSON
-- 🎨 **Custom Colors**: Add your own custom color definitions
+- 🎨 **Custom Colors**: Add your own custom color definitions with piece IDs
+- 🏷️ **Color Customization**: Override pre-defined colors with your own values
 - 📱 **Responsive Design**: Works on desktop, tablet, and mobile
 
 ## Tech Stack
 
-- **Framework**: Next.js 14+ (App Router)
-- **UI**: shadcn/ui + Tailwind CSS
+- **Framework**: Next.js 14+ with App Router and TypeScript
+- **UI**: shadcn/ui + Tailwind CSS v4 (oklch color space)
 - **Database**: Vercel Postgres with Drizzle ORM
-- **Authentication**: NextAuth.js (v5)
-- **Internationalization**: next-intl
+- **Authentication**: NextAuth.js v5 (email/password)
 - **Deployment**: Vercel
 
 ## Getting Started
@@ -29,7 +31,6 @@ A modern web application for managing your perler bead (拼豆) inventory with d
 
 - Node.js 18+ and npm
 - A Vercel account (for database hosting)
-- (Optional) Google OAuth credentials for social login
 
 ### Installation
 
@@ -53,10 +54,6 @@ A modern web application for managing your perler bead (拼豆) inventory with d
    # NextAuth - Generate a secret: openssl rand -base64 32
    NEXTAUTH_URL=http://localhost:3000
    NEXTAUTH_SECRET=your_secret_key_here
-
-   # Google OAuth (optional)
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
    ```
 
 3. **Set up Vercel Postgres**
@@ -123,10 +120,7 @@ A modern web application for managing your perler bead (拼豆) inventory with d
 ### 3. Export/Import
 
 - **Export**: Download your inventory as JSON for backup
-
-### 4. Language Switching
-
-- Click the globe icon in the top right to switch between Chinese and English
+- **Import**: Upload JSON to restore or merge inventory data
 
 ## Deployment to Vercel
 
@@ -145,4 +139,4 @@ A modern web application for managing your perler bead (拼豆) inventory with d
 
 ---
 
-Made with ❤️ for the perler bead community (拼豆爱好者)
+Made with ❤️ by [Neet-Nestor](https://github.com/Neet-Nestor) for the perler bead community (拼豆爱好者)

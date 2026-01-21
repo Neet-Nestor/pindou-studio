@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "拼豆库存管理",
-  description: "管理您的拼豆库存，支持多种颜色套装",
+  title: "拼豆Studio",
+  description: "专业的拼豆库存管理工具，支持多品牌颜色套装",
 };
 
 export default function RootLayout({

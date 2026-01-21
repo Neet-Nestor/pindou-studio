@@ -3,9 +3,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { userInventory, colors, colorSets, userColorCustomizations } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { getTranslations } from 'next-intl/server';
 import InventoryGrid from '@/components/inventory/inventory-grid';
-import LanguageSwitcher from '@/components/language-switcher';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { signOut } from '@/lib/auth';
@@ -16,8 +14,6 @@ export default async function InventoryPage() {
   if (!session?.user) {
     redirect('/login');
   }
-
-  const t = await getTranslations();
 
   // Fetch user's inventory with color, color set, and customization details
   const inventory = await db
@@ -66,14 +62,13 @@ export default async function InventoryPage() {
     <div className="flex min-h-screen flex-col">
       <header className="border-b bg-background">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <h1 className="text-xl font-bold">{t('common.appName')}</h1>
+          <h1 className="text-xl font-bold">拼豆Studio</h1>
           <div className="flex items-center gap-4">
             <Link href="/onboarding">
               <Button variant="outline" size="sm">
-                {t('onboarding.selectSets')}
+                选择颜色套装
               </Button>
             </Link>
-            <LanguageSwitcher />
             <form
               action={async () => {
                 'use server';
@@ -81,7 +76,7 @@ export default async function InventoryPage() {
               }}
             >
               <Button type="submit" variant="ghost" size="sm">
-                {t('auth.logout')}
+                退出
               </Button>
             </form>
           </div>
@@ -93,10 +88,10 @@ export default async function InventoryPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-bold tracking-tight">
-                {t('inventory.title')}
+                我的库存
               </h2>
               <p className="text-muted-foreground">
-                {inventory.length} {inventory.length === 1 ? 'color' : 'colors'}
+                {inventory.length} 种颜色
               </p>
             </div>
           </div>
@@ -104,11 +99,11 @@ export default async function InventoryPage() {
           {inventory.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-xl text-muted-foreground mb-4">
-                {t('inventory.title')} is empty
+                库存为空
               </p>
               <Link href="/onboarding">
                 <Button size="lg">
-                  {t('onboarding.selectSets')}
+                  选择颜色套装
                 </Button>
               </Link>
             </div>
