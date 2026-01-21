@@ -37,7 +37,7 @@ export default function LoginPage() {
         router.push('/inventory');
         router.refresh();
       }
-    } catch (error) {
+    } catch {
       setError('发生错误，请重试');
     } finally {
       setIsLoading(false);

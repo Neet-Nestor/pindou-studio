@@ -62,7 +62,7 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
 
   // Filter and sort inventory
   const filteredInventory = useMemo(() => {
-    let filtered = inventory.filter((item) => {
+    const filtered = inventory.filter((item) => {
       if (!item.color) return false;
 
       const matchesSearch =
@@ -151,7 +151,7 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
           </SelectContent>
         </Select>
 
-        <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+        <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'code' | 'name' | 'quantity')}>
           <SelectTrigger className="w-full md:w-[200px]">
             <SelectValue />
           </SelectTrigger>
@@ -198,7 +198,7 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
 
       {filteredInventory.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
-          搜索 "{searchQuery}" - 没有找到结果
+          搜索 &quot;{searchQuery}&quot; - 没有找到结果
         </div>
       )}
 

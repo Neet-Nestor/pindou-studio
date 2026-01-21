@@ -41,8 +41,8 @@ export default function SignupPage() {
       }
 
       router.push('/login?registered=true');
-    } catch (error: any) {
-      setError(error.message || '发生错误，请重试');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : '发生错误，请重试');
     } finally {
       setIsLoading(false);
     }

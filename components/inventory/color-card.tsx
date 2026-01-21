@@ -256,7 +256,6 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
         color={item.color}
-        inventoryId={item.id}
         customization={item.customization}
       />
     )}

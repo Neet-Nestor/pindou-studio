@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 
 interface EditColorDialogProps {
   open: boolean;
@@ -20,7 +19,6 @@ interface EditColorDialogProps {
     nameZh: string | null;
     hexColor: string;
   };
-  inventoryId: string;
   customization?: {
     customCode: string | null;
     customName: string | null;
@@ -36,7 +34,6 @@ export default function EditColorDialog({
   open,
   onOpenChange,
   color,
-  inventoryId,
   customization,
 }: EditColorDialogProps) {
   const router = useRouter();
@@ -92,14 +89,6 @@ export default function EditColorDialog({
       setIsLoading(false);
     }
   };
-
-  const hasCustomization =
-    formData.customCode ||
-    formData.customNameZh ||
-    formData.customNameEn ||
-    formData.customHexColor ||
-    formData.pieceId ||
-    formData.notes;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
