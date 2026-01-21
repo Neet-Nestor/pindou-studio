@@ -5,7 +5,6 @@ import { userInventory, colors, colorSets, userColorCustomizations } from '@/lib
 import { eq, and } from 'drizzle-orm';
 import InventoryGrid from '@/components/inventory/inventory-grid';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { signOut } from '@/lib/auth';
 
 export default async function InventoryPage() {
@@ -64,11 +63,6 @@ export default async function InventoryPage() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <h1 className="text-xl font-bold">拼豆Studio</h1>
           <div className="flex items-center gap-4">
-            <Link href="/onboarding">
-              <Button variant="outline" size="sm">
-                选择颜色套装
-              </Button>
-            </Link>
             <form
               action={async () => {
                 'use server';
@@ -97,15 +91,12 @@ export default async function InventoryPage() {
           </div>
 
           {inventory.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-xl text-muted-foreground mb-4">
-                库存为空
+            <div className="text-center py-16 space-y-4">
+              <div className="text-6xl mb-4">📦</div>
+              <h3 className="text-2xl font-bold">库存为空</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                点击右上角的 &quot;+&quot; 按钮开始添加您的拼豆片。您可以逐个添加或批量导入。
               </p>
-              <Link href="/onboarding">
-                <Button size="lg">
-                  选择颜色套装
-                </Button>
-              </Link>
             </div>
           ) : (
             <InventoryGrid inventory={inventory} />

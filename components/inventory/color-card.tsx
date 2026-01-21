@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Minus, Plus, Edit2 } from 'lucide-react';
@@ -52,10 +51,7 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
   const displayCode = item.customization?.customCode || item.color.code;
   const displayHexColor = item.customization?.customHexColor || item.color.hexColor;
   const displayPieceId = item.customization?.pieceId;
-
   const colorName = item.customization?.customNameZh || item.color.nameZh || item.color.name;
-
-  const hasCustomization = !!item.customization?.id;
 
   const updateQuantity = async (newQuantity: number) => {
     if (newQuantity < 0) return;
@@ -100,165 +96,133 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
 
   return (
     <>
-      <Card className="overflow-hidden hover:shadow-md transition-shadow">
-        <div className="relative">
-          {/* Color swatch */}
+      <div className="group border rounded-lg p-3 hover:border-primary/50 transition-colors bg-card relative">
+        {/* Status badges - top right */}
+        <div className="absolute top-2 right-2 flex gap-1">
+          {isOutOfStock && (
+            <Badge variant="destructive" className="text-[10px] h-4 px-1.5">
+              缺货
+            </Badge>
+          )}
+          {isLowStock && (
+            <Badge className="text-[10px] h-4 px-1.5 bg-yellow-500 text-white border-yellow-600">
+              低库存
+            </Badge>
+          )}
+        </div>
+
+        <div className="flex items-start gap-3">
+          {/* Small color swatch - de-emphasized */}
           <div
-            className="h-24 w-full"
+            className="w-8 h-8 rounded border shrink-0 mt-1"
             style={{ backgroundColor: displayHexColor }}
           />
 
-          {/* Stock badges */}
-          <div className="absolute top-2 right-2 flex gap-1 flex-wrap max-w-[calc(100%-1rem)]">
-            {isOutOfStock && (
-              <Badge variant="destructive" className="text-xs">
-                缺货
-              </Badge>
-            )}
-            {isLowStock && (
-              <Badge variant="secondary" className="text-xs bg-yellow-500 text-white">
-                低库存
-              </Badge>
-            )}
-            {item.customColor && (
-              <Badge variant="outline" className="text-xs">
-                自定义
-              </Badge>
-            )}
-            {hasCustomization && (
-              <Badge variant="secondary" className="text-xs">
-                已定制
-              </Badge>
-            )}
-          </div>
-
-          {/* Edit button */}
-          <Button
-            size="icon"
-            variant="secondary"
-            className="absolute bottom-2 right-2 h-8 w-8 opacity-0 hover:opacity-100 transition-opacity"
-            onClick={() => setShowEditDialog(true)}
-          >
-            <Edit2 className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <CardContent className="p-4 space-y-3">
-          {/* Color info */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1 min-w-0">
-                <span className="font-mono text-sm font-semibold truncate">
-                  {displayCode}
+          {/* Main content - piece name emphasized */}
+          <div className="flex-1 min-w-0 space-y-2">
+            {/* Piece ID/Name - PROMINENT */}
+            <div className="space-y-0.5">
+              <div className="flex items-baseline gap-2">
+                <span className="font-bold text-base truncate">
+                  {displayPieceId || displayCode}
                 </span>
-                {displayPieceId && (
-                  <span className="text-xs text-muted-foreground">
-                    ({displayPieceId})
-                  </span>
-                )}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                  onClick={() => setShowEditDialog(true)}
+                >
+                  <Edit2 className="h-3 w-3" />
+                </Button>
               </div>
+              <p className="text-xs text-muted-foreground truncate">
+                {colorName}
+              </p>
               {item.colorSet && (
-                <span className="text-xs text-muted-foreground shrink-0">
+                <p className="text-[10px] text-muted-foreground">
                   {item.colorSet.brand}
-                </span>
+                </p>
               )}
             </div>
-            <p className="text-sm text-muted-foreground line-clamp-1">
-              {colorName}
-            </p>
-          </div>
 
-        {/* Quantity display */}
-        {showInput ? (
-          <div className="flex gap-2">
-            <Input
-              type="number"
-              min="0"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleInputSubmit()}
-              className="h-8 text-sm"
-              autoFocus
-            />
-            <Button
-              size="sm"
-              onClick={handleInputSubmit}
-              disabled={isUpdating}
-            >
-              OK
-            </Button>
+            {/* Quantity controls - compact */}
+            <div className="flex items-center gap-2">
+              {showInput ? (
+                <>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleInputSubmit()}
+                    onBlur={handleInputSubmit}
+                    className="h-7 text-sm w-20"
+                    autoFocus
+                  />
+                  <Button
+                    size="sm"
+                    onClick={handleInputSubmit}
+                    disabled={isUpdating}
+                    className="h-7 px-2"
+                  >
+                    确定
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div
+                    className="font-bold text-lg cursor-pointer hover:text-primary min-w-[2rem] text-center"
+                    onClick={() => {
+                      setShowInput(true);
+                      setInputValue(item.quantity.toString());
+                    }}
+                  >
+                    {item.quantity}
+                  </div>
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleQuickAdjust(-1)}
+                      disabled={isUpdating || item.quantity < 1}
+                      className="h-7 w-7 p-0"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleQuickAdjust(1)}
+                      disabled={isUpdating}
+                      className="h-7 w-7 p-0"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleQuickAdjust(5)}
+                      disabled={isUpdating}
+                      className="h-7 px-2"
+                    >
+                      +5
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        ) : (
-          <div
-            className="text-2xl font-bold text-center cursor-pointer hover:text-primary"
-            onClick={() => {
-              setShowInput(true);
-              setInputValue(item.quantity.toString());
-            }}
-          >
-            {item.quantity}
-          </div>
-        )}
-
-        {/* Quick adjust buttons */}
-        <div className="grid grid-cols-5 gap-1">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleQuickAdjust(-10)}
-            disabled={isUpdating || item.quantity < 10}
-            className="h-8 px-2"
-          >
-            -10
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleQuickAdjust(-5)}
-            disabled={isUpdating || item.quantity < 5}
-            className="h-8 px-2"
-          >
-            -5
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleQuickAdjust(-1)}
-            disabled={isUpdating || item.quantity < 1}
-            className="h-8 px-2"
-          >
-            <Minus className="h-3 w-3" />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleQuickAdjust(1)}
-            disabled={isUpdating}
-            className="h-8 px-2"
-          >
-            <Plus className="h-3 w-3" />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleQuickAdjust(5)}
-            disabled={isUpdating}
-            className="h-8 px-2"
-          >
-            +5
-          </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
 
-    {showEditDialog && (
-      <EditColorDialog
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
-        color={item.color}
-        customization={item.customization}
-      />
-    )}
+      {showEditDialog && (
+        <EditColorDialog
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          color={item.color}
+          customization={item.customization}
+        />
+      )}
     </>
   );
 }

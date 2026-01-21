@@ -45,20 +45,9 @@ interface InventoryGridProps {
 export default function InventoryGrid({ inventory: initialInventory }: InventoryGridProps) {
   const [inventory, setInventory] = useState(initialInventory);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSet, setSelectedSet] = useState<string>('all');
+  const [stockFilter, setStockFilter] = useState<'all' | 'in-stock' | 'low-stock' | 'out-of-stock'>('all');
   const [sortBy, setSortBy] = useState<'code' | 'name' | 'quantity'>('code');
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
-
-  // Extract unique color sets
-  const colorSets = useMemo(() => {
-    const sets = new Map<string, { id: string; name: string; brand: string }>();
-    inventory.forEach((item) => {
-      if (item.colorSet) {
-        sets.set(item.colorSet.id, item.colorSet);
-      }
-    });
-    return Array.from(sets.values());
-  }, [inventory]);
 
   // Filter and sort inventory
   const filteredInventory = useMemo(() => {
@@ -71,12 +60,13 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
         (item.color.nameEn?.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (item.color.nameZh?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      const matchesSet =
-        selectedSet === 'all' ||
-        item.colorSet?.id === selectedSet ||
-        (selectedSet === 'custom' && item.customColor);
+      const matchesStock =
+        stockFilter === 'all' ||
+        (stockFilter === 'in-stock' && item.quantity > 10) ||
+        (stockFilter === 'low-stock' && item.quantity > 0 && item.quantity <= 10) ||
+        (stockFilter === 'out-of-stock' && item.quantity === 0);
 
-      return matchesSearch && matchesSet;
+      return matchesSearch && matchesStock;
     });
 
     // Sort
@@ -93,7 +83,7 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
     });
 
     return filtered;
-  }, [inventory, searchQuery, selectedSet, sortBy]);
+  }, [inventory, searchQuery, stockFilter, sortBy]);
 
   const handleQuantityUpdate = (itemId: string, newQuantity: number) => {
     setInventory((prev) =>
@@ -136,23 +126,20 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
           />
         </div>
 
-        <Select value={selectedSet} onValueChange={setSelectedSet}>
-          <SelectTrigger className="w-full md:w-[200px]">
+        <Select value={stockFilter} onValueChange={(value) => setStockFilter(value as typeof stockFilter)}>
+          <SelectTrigger className="w-full md:w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">全部套装</SelectItem>
-            {colorSets.map((set) => (
-              <SelectItem key={set.id} value={set.id}>
-                {set.name}
-              </SelectItem>
-            ))}
-            <SelectItem value="custom">自定义颜色</SelectItem>
+            <SelectItem value="all">全部状态</SelectItem>
+            <SelectItem value="in-stock">有库存</SelectItem>
+            <SelectItem value="low-stock">低库存</SelectItem>
+            <SelectItem value="out-of-stock">缺货</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'code' | 'name' | 'quantity')}>
-          <SelectTrigger className="w-full md:w-[200px]">
+          <SelectTrigger className="w-full md:w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -180,13 +167,34 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
         </div>
       </div>
 
-      {/* Results count */}
-      <div className="text-sm text-muted-foreground">
-        库存: {filteredInventory.length} / {inventory.length}
+      {/* Stock Insights */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="border rounded-lg p-4">
+          <div className="text-sm text-muted-foreground">总计</div>
+          <div className="text-2xl font-bold">{filteredInventory.length}</div>
+        </div>
+        <div className="border rounded-lg p-4">
+          <div className="text-sm text-muted-foreground">有库存</div>
+          <div className="text-2xl font-bold text-green-600">
+            {filteredInventory.filter(i => i.quantity > 10).length}
+          </div>
+        </div>
+        <div className="border rounded-lg p-4 bg-yellow-50 dark:bg-yellow-950/20">
+          <div className="text-sm text-muted-foreground">低库存</div>
+          <div className="text-2xl font-bold text-yellow-600">
+            {filteredInventory.filter(i => i.quantity > 0 && i.quantity <= 10).length}
+          </div>
+        </div>
+        <div className="border rounded-lg p-4 bg-red-50 dark:bg-red-950/20">
+          <div className="text-sm text-muted-foreground">缺货</div>
+          <div className="text-2xl font-bold text-red-600">
+            {filteredInventory.filter(i => i.quantity === 0).length}
+          </div>
+        </div>
       </div>
 
-      {/* Inventory grid */}
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      {/* Inventory grid - more compact */}
+      <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {filteredInventory.map((item) => (
           <ColorCard
             key={item.id}
