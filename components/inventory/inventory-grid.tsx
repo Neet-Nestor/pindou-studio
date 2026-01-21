@@ -169,25 +169,25 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
 
       {/* Stock Insights */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-lg p-4 bg-card">
           <div className="text-sm text-muted-foreground">总计</div>
           <div className="text-2xl font-bold">{filteredInventory.length}</div>
         </div>
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-lg p-4 bg-card">
           <div className="text-sm text-muted-foreground">有库存</div>
-          <div className="text-2xl font-bold text-green-600">
+          <div className="text-2xl font-bold text-green-600 dark:text-green-500">
             {filteredInventory.filter(i => i.quantity > 10).length}
           </div>
         </div>
-        <div className="border rounded-lg p-4 bg-yellow-50 dark:bg-yellow-950/20">
+        <div className="border rounded-lg p-4 bg-card border-yellow-200 dark:border-yellow-800">
           <div className="text-sm text-muted-foreground">低库存</div>
-          <div className="text-2xl font-bold text-yellow-600">
+          <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">
             {filteredInventory.filter(i => i.quantity > 0 && i.quantity <= 10).length}
           </div>
         </div>
-        <div className="border rounded-lg p-4 bg-red-50 dark:bg-red-950/20">
+        <div className="border rounded-lg p-4 bg-card border-red-200 dark:border-red-800">
           <div className="text-sm text-muted-foreground">缺货</div>
-          <div className="text-2xl font-bold text-red-600">
+          <div className="text-2xl font-bold text-red-600 dark:text-red-500">
             {filteredInventory.filter(i => i.quantity === 0).length}
           </div>
         </div>
