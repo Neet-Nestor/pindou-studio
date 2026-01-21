@@ -56,15 +56,52 @@ A modern web application for managing your perler bead inventory with database s
    NEXTAUTH_SECRET=your_secret_key_here
    ```
 
-3. **Set up Vercel Postgres**
+3. **Set up Vercel Postgres Database**
 
-   a. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   a. **Create a Vercel Account**
+      - Go to [Vercel](https://vercel.com) and sign up/login
+      - You can use GitHub, GitLab, or Bitbucket to sign in
 
-   b. Create a new project or select an existing one
+   b. **Create a new Vercel Project (Optional)**
+      - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+      - Click "Add New..." → "Project"
+      - Import your GitHub repository or skip this step for now
 
-   c. Go to the "Storage" tab and create a new Postgres database
+   c. **Create Postgres Database**
+      - In your Vercel Dashboard, go to the "Storage" tab
+      - Click "Create Database"
+      - Select "Postgres" (powered by Neon)
+      - Choose a database name (e.g., "pindou-db")
+      - Select a region close to your users (e.g., "Washington, D.C., USA (iad1)")
+      - Click "Create"
 
-   d. Copy the connection strings to your `.env.local` file
+   d. **Get Database Connection String**
+      - After creation, you'll see your database dashboard
+      - Click on the ".env.local" tab
+      - You'll see environment variables like:
+        ```
+        POSTGRES_URL="postgres://..."
+        POSTGRES_PRISMA_URL="postgres://..."
+        POSTGRES_URL_NO_SSL="postgres://..."
+        POSTGRES_URL_NON_POOLING="postgres://..."
+        ```
+      - Copy the `POSTGRES_URL` value
+
+   e. **Configure Local Environment**
+      - Open your `.env.local` file
+      - Paste the `POSTGRES_URL` value:
+        ```env
+        POSTGRES_URL="postgres://default:xxx@xxx.aws.neon.tech:5432/verceldb?sslmode=require"
+        ```
+      - Add other required variables:
+        ```env
+        NEXTAUTH_URL=http://localhost:3000
+        NEXTAUTH_SECRET=your_generated_secret_here
+        ```
+
+   f. **Test Connection**
+      - Run `npm run db:push` to verify the connection
+      - If successful, your database schema will be created
 
 4. **Generate and run database migrations**
    ```bash
@@ -124,11 +161,99 @@ A modern web application for managing your perler bead inventory with database s
 
 ## Deployment to Vercel
 
-1. Push your code to GitHub
-2. Import project in Vercel
-3. Configure environment variables
-4. Deploy
-5. Seed the production database
+### 1. Push Code to GitHub
+
+```bash
+git add .
+git commit -m "Ready for deployment"
+git push origin main
+```
+
+### 2. Import Project to Vercel
+
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click "Add New..." → "Project"
+3. Select your GitHub repository (pindou-studio)
+4. Click "Import"
+
+### 3. Configure Production Database
+
+1. **Link Database to Project**
+   - In your Vercel project settings, go to "Storage"
+   - Click "Connect Store"
+   - Select your existing Postgres database OR create a new one
+   - Click "Connect"
+
+2. **Automatic Environment Variables**
+   - Vercel will automatically add database environment variables to your project
+   - The following variables will be set automatically:
+     - `POSTGRES_URL`
+     - `POSTGRES_PRISMA_URL`
+     - `POSTGRES_URL_NO_SSL`
+     - `POSTGRES_URL_NON_POOLING`
+
+3. **Add Additional Environment Variables**
+   - Go to "Settings" → "Environment Variables"
+   - Add the following variables:
+     ```
+     NEXTAUTH_URL = https://your-app.vercel.app
+     NEXTAUTH_SECRET = (generate with: openssl rand -base64 32)
+     ```
+
+### 4. Deploy
+
+1. Click "Deploy" in your Vercel project
+2. Wait for the build to complete (usually 2-3 minutes)
+3. Your app will be live at `https://your-app.vercel.app`
+
+### 5. Initialize Production Database
+
+After first deployment, you need to seed the database with color sets:
+
+**Option A: Using Vercel CLI (Recommended)**
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Link to your project
+vercel link
+
+# Run seed command on production
+vercel env pull .env.production.local
+npm run db:seed
+```
+
+**Option B: Manual SQL Upload**
+1. Go to your Vercel database dashboard
+2. Click "Query" tab
+3. Manually run seed queries from `lib/db/seed.ts`
+
+### 6. Verify Deployment
+
+1. Visit your deployed site: `https://your-app.vercel.app`
+2. Create a new account
+3. Go to onboarding and select color sets
+4. Verify inventory loads correctly
+
+### Troubleshooting
+
+**Database Connection Issues:**
+- Ensure `POSTGRES_URL` is set correctly in environment variables
+- Check if database region matches your Vercel deployment region
+- Verify SSL mode is set to `require` in connection string
+
+**Build Failures:**
+- Check build logs in Vercel dashboard
+- Ensure all dependencies are in `package.json`
+- Verify TypeScript compilation succeeds locally
+
+**Authentication Issues:**
+- Make sure `NEXTAUTH_URL` matches your production domain
+- Regenerate `NEXTAUTH_SECRET` if needed
+- Clear browser cookies and try again
 
 ## Acknowledgments
 
