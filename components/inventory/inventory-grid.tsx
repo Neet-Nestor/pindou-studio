@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -44,8 +43,6 @@ interface InventoryGridProps {
 }
 
 export default function InventoryGrid({ inventory: initialInventory }: InventoryGridProps) {
-  const t = useTranslations();
-  const locale = useLocale();
   const [inventory, setInventory] = useState(initialInventory);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSet, setSelectedSet] = useState<string>('all');
@@ -87,8 +84,8 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
       if (sortBy === 'quantity') {
         return (b.quantity || 0) - (a.quantity || 0);
       } else if (sortBy === 'name') {
-        const nameA = locale === 'zh' ? (a.color?.nameZh || a.color?.name || '') : (a.color?.nameEn || a.color?.name || '');
-        const nameB = locale === 'zh' ? (b.color?.nameZh || b.color?.name || '') : (b.color?.nameEn || b.color?.name || '');
+        const nameA = a.color?.nameZh || a.color?.name || '';
+        const nameB = b.color?.nameZh || b.color?.name || '';
         return nameA.localeCompare(nameB);
       } else {
         return (a.color?.code || '').localeCompare(b.color?.code || '');
@@ -96,7 +93,7 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
     });
 
     return filtered;
-  }, [inventory, searchQuery, selectedSet, sortBy, locale]);
+  }, [inventory, searchQuery, selectedSet, sortBy]);
 
   const handleQuantityUpdate = (itemId: string, newQuantity: number) => {
     setInventory((prev) =>
@@ -132,7 +129,7 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={t('inventory.searchPlaceholder')}
+            placeholder="搜索颜色代码或名称"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -144,13 +141,13 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('inventory.allSets')}</SelectItem>
+            <SelectItem value="all">全部套装</SelectItem>
             {colorSets.map((set) => (
               <SelectItem key={set.id} value={set.id}>
                 {set.name}
               </SelectItem>
             ))}
-            <SelectItem value="custom">{t('inventory.customColor')}</SelectItem>
+            <SelectItem value="custom">自定义颜色</SelectItem>
           </SelectContent>
         </Select>
 
@@ -159,23 +156,23 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="code">{t('inventory.sortByCode')}</SelectItem>
-            <SelectItem value="name">{t('inventory.sortByName')}</SelectItem>
-            <SelectItem value="quantity">{t('inventory.sortByQuantity')}</SelectItem>
+            <SelectItem value="code">按代码排序</SelectItem>
+            <SelectItem value="name">按名称排序</SelectItem>
+            <SelectItem value="quantity">按数量排序</SelectItem>
           </SelectContent>
         </Select>
 
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={handleExport} title={t('common.export')}>
+          <Button variant="outline" size="icon" onClick={handleExport} title="导出">
             <Download className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" title={t('common.import')}>
+          <Button variant="outline" size="icon" title="导入">
             <Upload className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            title={t('inventory.addCustomColor')}
+            title="添加自定义颜色"
             onClick={() => setShowAddColorDialog(true)}
           >
             <Plus className="h-4 w-4" />
@@ -185,7 +182,7 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
 
       {/* Results count */}
       <div className="text-sm text-muted-foreground">
-        {t('inventory.title')}: {filteredInventory.length} / {inventory.length}
+        库存: {filteredInventory.length} / {inventory.length}
       </div>
 
       {/* Inventory grid */}
@@ -201,7 +198,7 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
 
       {filteredInventory.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
-          {t('common.search')} "{searchQuery}" - No results found
+          搜索 "{searchQuery}" - 没有找到结果
         </div>
       )}
 

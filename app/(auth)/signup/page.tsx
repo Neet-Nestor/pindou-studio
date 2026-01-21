@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Palette } from 'lucide-react';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -49,6 +50,10 @@ export default function SignupPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+      <Link href="/" className="flex items-center gap-2 mb-8 text-2xl font-bold hover:opacity-80 transition-opacity">
+        <Palette className="h-7 w-7" />
+        <span>拼豆Studio</span>
+      </Link>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">创建账户</CardTitle>

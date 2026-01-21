@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,8 +41,6 @@ interface ColorCardProps {
 }
 
 export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
-  const t = useTranslations('inventory');
-  const locale = useLocale();
   const [isUpdating, setIsUpdating] = useState(false);
   const [showInput, setShowInput] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -56,9 +53,7 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
   const displayHexColor = item.customization?.customHexColor || item.color.hexColor;
   const displayPieceId = item.customization?.pieceId;
 
-  const colorName = locale === 'zh'
-    ? (item.customization?.customNameZh || item.color.nameZh || item.color.name)
-    : (item.customization?.customNameEn || item.color.nameEn || item.color.name);
+  const colorName = item.customization?.customNameZh || item.color.nameZh || item.color.name;
 
   const hasCustomization = !!item.customization?.id;
 
@@ -117,22 +112,22 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
           <div className="absolute top-2 right-2 flex gap-1 flex-wrap max-w-[calc(100%-1rem)]">
             {isOutOfStock && (
               <Badge variant="destructive" className="text-xs">
-                {t('outOfStock')}
+                缺货
               </Badge>
             )}
             {isLowStock && (
               <Badge variant="secondary" className="text-xs bg-yellow-500 text-white">
-                {t('lowStock')}
+                低库存
               </Badge>
             )}
             {item.customColor && (
               <Badge variant="outline" className="text-xs">
-                {t('customColor')}
+                自定义
               </Badge>
             )}
             {hasCustomization && (
               <Badge variant="secondary" className="text-xs">
-                {t('customized')}
+                已定制
               </Badge>
             )}
           </div>

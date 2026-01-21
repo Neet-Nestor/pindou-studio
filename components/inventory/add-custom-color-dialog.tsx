@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,8 +14,6 @@ interface AddCustomColorDialogProps {
 }
 
 export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomColorDialogProps) {
-  const t = useTranslations('customColor');
-  const tCommon = useTranslations('common');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -70,39 +67,39 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogTitle>添加自定义颜色</DialogTitle>
           <DialogDescription>
-            Create a new custom color for your inventory
+            为您的库存创建一个新的自定义颜色
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="code">{t('code')} *</Label>
+            <Label htmlFor="code">颜色代码 *</Label>
             <Input
               id="code"
               value={formData.code}
               onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-              placeholder={t('codePlaceholder')}
+              placeholder="例如: C001"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="pieceId">{t('pieceId')}</Label>
+            <Label htmlFor="pieceId">拼豆片号</Label>
             <Input
               id="pieceId"
               value={formData.pieceId}
               onChange={(e) => setFormData({ ...formData, pieceId: e.target.value })}
-              placeholder={t('pieceIdHelp')}
+              placeholder="您拥有的实体拼豆包装上的片号"
             />
             <p className="text-xs text-muted-foreground">
-              {t('pieceIdHelp')}
+              您拥有的实体拼豆包装上的片号
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="nameZh">{t('nameZh')} *</Label>
+            <Label htmlFor="nameZh">中文名称 *</Label>
             <Input
               id="nameZh"
               value={formData.nameZh}
@@ -113,7 +110,7 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="nameEn">{t('nameEn')}</Label>
+            <Label htmlFor="nameEn">英文名称</Label>
             <Input
               id="nameEn"
               value={formData.nameEn}
@@ -123,7 +120,7 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hexColor">{t('hexColor')} *</Label>
+            <Label htmlFor="hexColor">颜色值 *</Label>
             <div className="flex gap-2">
               <Input
                 id="hexColor"
@@ -143,7 +140,7 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="initialQuantity">{t('initialQuantity')}</Label>
+            <Label htmlFor="initialQuantity">初始数量</Label>
             <Input
               id="initialQuantity"
               type="number"
@@ -154,12 +151,12 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">{t('notes')}</Label>
+            <Label htmlFor="notes">备注</Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder={t('notesPlaceholder')}
+              placeholder="添加颜色相关备注..."
               rows={3}
             />
           </div>
@@ -171,10 +168,10 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              {tCommon('cancel')}
+              取消
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Creating...' : t('create')}
+              {isLoading ? '创建中...' : '创建'}
             </Button>
           </DialogFooter>
         </form>

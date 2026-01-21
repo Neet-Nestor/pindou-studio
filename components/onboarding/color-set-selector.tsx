@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,6 @@ interface ColorSetSelectorProps {
 }
 
 export default function ColorSetSelector({ colorSets, userId }: ColorSetSelectorProps) {
-  const t = useTranslations();
   const router = useRouter();
   const [selectedSets, setSelectedSets] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,7 +101,7 @@ export default function ColorSetSelector({ colorSets, userId }: ColorSetSelector
           onClick={handleSkip}
           disabled={isLoading}
         >
-          {t('onboarding.skip')}
+          跳过
         </Button>
         <Button
           size="lg"
@@ -111,8 +109,8 @@ export default function ColorSetSelector({ colorSets, userId }: ColorSetSelector
           disabled={selectedSets.length === 0 || isLoading}
         >
           {isLoading
-            ? t('common.loading')
-            : `${t('onboarding.continue')} (${selectedSets.length})`}
+            ? '加载中...'
+            : `继续 (${selectedSets.length})`}
         </Button>
       </div>
     </div>
