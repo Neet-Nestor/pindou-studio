@@ -384,16 +384,30 @@ export default function InventoryGrid({
         </div>
       </div>
 
-      {/* Stock Insights - Compact, more compact on mobile */}
+      {/* Stock Insights - Compact, clickable to filter */}
       <div className="grid grid-cols-4 gap-2 md:gap-3 mt-2">
         {/* Total */}
-        <div className="rounded-lg p-2 md:p-4 bg-card border hover:shadow-md transition-all">
+        <div
+          className={`rounded-lg p-2 md:p-4 bg-card border hover:shadow-md transition-all cursor-pointer ${
+            stockFilter === 'all'
+              ? 'ring-2 ring-primary border-primary'
+              : 'hover:border-primary/50'
+          }`}
+          onClick={() => setStockFilter('all')}
+        >
           <div className="text-[10px] md:text-xs text-muted-foreground font-medium mb-0.5 md:mb-1">总计</div>
           <div className="text-xl md:text-3xl font-bold tracking-tight">{stats.total}</div>
         </div>
 
         {/* In Stock */}
-        <div className="rounded-lg p-2 md:p-4 bg-card border border-green-200 dark:border-green-900/40 hover:shadow-md hover:border-green-300 dark:hover:border-green-800/60 transition-all">
+        <div
+          className={`rounded-lg p-2 md:p-4 bg-card border border-green-200 dark:border-green-900/40 hover:shadow-md hover:border-green-300 dark:hover:border-green-800/60 transition-all cursor-pointer ${
+            stockFilter === 'in-stock'
+              ? 'ring-2 ring-green-500 dark:ring-green-400 border-green-400 dark:border-green-600'
+              : ''
+          }`}
+          onClick={() => setStockFilter('in-stock')}
+        >
           <div className="text-[10px] md:text-xs font-medium mb-0.5 md:mb-1 text-green-700 dark:text-green-300">有库存</div>
           <div className="text-xl md:text-3xl font-bold tracking-tight text-green-700 dark:text-green-300">
             {stats.inStock}
@@ -401,7 +415,14 @@ export default function InventoryGrid({
         </div>
 
         {/* Low Stock */}
-        <div className="rounded-lg p-2 md:p-4 bg-card border border-orange-200 dark:border-orange-900/40 hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800/60 transition-all">
+        <div
+          className={`rounded-lg p-2 md:p-4 bg-card border border-orange-200 dark:border-orange-900/40 hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800/60 transition-all cursor-pointer ${
+            stockFilter === 'low-stock'
+              ? 'ring-2 ring-orange-500 dark:ring-orange-400 border-orange-400 dark:border-orange-600'
+              : ''
+          }`}
+          onClick={() => setStockFilter('low-stock')}
+        >
           <div className="text-[10px] md:text-xs font-medium mb-0.5 md:mb-1 text-orange-700 dark:text-orange-300">低库存</div>
           <div className="text-xl md:text-3xl font-bold tracking-tight text-orange-700 dark:text-orange-300">
             {stats.lowStock}
@@ -409,7 +430,14 @@ export default function InventoryGrid({
         </div>
 
         {/* Out of Stock */}
-        <div className="rounded-lg p-2 md:p-4 bg-card border border-red-200 dark:border-red-900/40 hover:shadow-md hover:border-red-300 dark:hover:border-red-800/60 transition-all">
+        <div
+          className={`rounded-lg p-2 md:p-4 bg-card border border-red-200 dark:border-red-900/40 hover:shadow-md hover:border-red-300 dark:hover:border-red-800/60 transition-all cursor-pointer ${
+            stockFilter === 'out-of-stock'
+              ? 'ring-2 ring-red-500 dark:ring-red-400 border-red-400 dark:border-red-600'
+              : ''
+          }`}
+          onClick={() => setStockFilter('out-of-stock')}
+        >
           <div className="text-[10px] md:text-xs font-medium mb-0.5 md:mb-1 text-red-700 dark:text-red-300">缺货</div>
           <div className="text-xl md:text-3xl font-bold tracking-tight text-red-700 dark:text-red-300">
             {stats.outOfStock}
