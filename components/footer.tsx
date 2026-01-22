@@ -12,7 +12,7 @@ export function Footer() {
           >
             Neet-Nestor
           </a>
-          {' '}· 专为拼豆爱好者打造
+          {' '}· 专为ccliu和其他拼豆爱好者们打造
         </p>
       </div>
     </footer>
