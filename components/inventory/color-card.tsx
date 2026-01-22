@@ -95,7 +95,7 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
 
   return (
     <>
-      <div className={`group relative rounded-lg overflow-hidden border bg-card transition-all hover:shadow-lg hover:border-primary/50 ${
+      <div className={`group relative flex flex-col rounded-lg overflow-hidden border bg-card transition-all hover:shadow-lg hover:border-primary/50 ${
         isOutOfStock ? 'opacity-50' : ''
       }`}>
         {/* Large color swatch - PROMINENT */}
@@ -134,18 +134,16 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
         </div>
 
         {/* Minimal info bar */}
-        <div className="px-2 py-1.5 bg-background/95 backdrop-blur space-y-1">
+        <div className="px-2 py-1.5 bg-card space-y-1 flex-shrink-0">
           {/* Piece ID - large and clear */}
           <div className="font-bold text-sm text-center truncate">
             {displayPieceId || displayCode}
           </div>
 
-          {/* Notes - visible but compact */}
-          {item.customization?.notes && (
-            <div className="text-[10px] text-muted-foreground text-center leading-tight truncate px-1" title={item.customization.notes}>
-              {item.customization.notes}
-            </div>
-          )}
+          {/* Notes - visible but compact, always takes up space */}
+          <div className="text-[10px] text-muted-foreground text-center leading-tight truncate px-1 min-h-[14px]" title={item.customization?.notes || ''}>
+            {item.customization?.notes || '\u00A0'}
+          </div>
 
           {/* Quantity controls - clean and simple */}
           <div className="flex items-center justify-center gap-1">
