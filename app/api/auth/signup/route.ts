@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
+import { seedDefaultColors, initializeUserInventory } from '@/lib/db/seed-default-colors';
 
 const signupSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -33,6 +34,9 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Ensure default colors are seeded
+    await seedDefaultColors();
+
     // Create user
     const [newUser] = await db
       .insert(users)
@@ -42,6 +46,9 @@ export async function POST(request: Request) {
         password: hashedPassword,
       })
       .returning();
+
+    // Initialize user inventory with 221 default colors at quantity 0
+    await initializeUserInventory(newUser.id);
 
     return NextResponse.json(
       {

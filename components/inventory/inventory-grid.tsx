@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Search, Download, Upload, Plus } from 'lucide-react';
 import ColorCard from './color-card';
 import AddCustomColorDialog from './add-custom-color-dialog';
+import FamilyGroup from './family-group';
+import { colorFamilies } from '@/lib/db/default-colors';
 
 interface InventoryItem {
   id: string;
@@ -40,17 +42,29 @@ interface InventoryItem {
 
 interface InventoryGridProps {
   inventory: InventoryItem[];
+  initialHiddenFamilies?: string[];
 }
 
-export default function InventoryGrid({ inventory: initialInventory }: InventoryGridProps) {
+// Helper function to extract family from color code
+function extractFamily(code: string): string {
+  // Match patterns like "ZG1", "A5", "B12", etc.
+  const match = code.match(/^([A-Z]+)/);
+  return match ? match[1] : 'Other';
+}
+
+export default function InventoryGrid({
+  inventory: initialInventory,
+  initialHiddenFamilies = [],
+}: InventoryGridProps) {
   const [inventory, setInventory] = useState(initialInventory);
   const [searchQuery, setSearchQuery] = useState('');
   const [stockFilter, setStockFilter] = useState<'all' | 'in-stock' | 'low-stock' | 'out-of-stock'>('all');
   const [sortBy, setSortBy] = useState<'code' | 'name' | 'quantity'>('code');
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
+  const [hiddenFamilies, setHiddenFamilies] = useState<Set<string>>(new Set(initialHiddenFamilies));
 
-  // Filter and sort inventory
-  const filteredInventory = useMemo(() => {
+  // Filter, sort, and group inventory by family
+  const groupedInventory = useMemo(() => {
     const filtered = inventory.filter((item) => {
       if (!item.color) return false;
 
@@ -69,7 +83,7 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
       return matchesSearch && matchesStock;
     });
 
-    // Sort
+    // Sort within each family
     filtered.sort((a, b) => {
       if (sortBy === 'quantity') {
         return (b.quantity || 0) - (a.quantity || 0);
@@ -82,7 +96,27 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
       }
     });
 
-    return filtered;
+    // Group by family
+    const grouped = new Map<string, typeof filtered>();
+    filtered.forEach((item) => {
+      if (!item.color) return;
+      const family = extractFamily(item.color.code);
+      if (!grouped.has(family)) {
+        grouped.set(family, []);
+      }
+      grouped.get(family)?.push(item);
+    });
+
+    // Sort families according to colorFamilies order
+    const sortedFamilies = colorFamilies.filter((f) => grouped.has(f));
+    const otherFamilies = Array.from(grouped.keys()).filter((f) => !colorFamilies.includes(f));
+    const allFamilies = [...sortedFamilies, ...otherFamilies];
+
+    return {
+      families: allFamilies,
+      items: grouped,
+      totalCount: filtered.length,
+    };
   }, [inventory, searchQuery, stockFilter, sortBy]);
 
   const handleQuantityUpdate = (itemId: string, newQuantity: number) => {
@@ -91,6 +125,32 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
         item.id === itemId ? { ...item, quantity: newQuantity } : item
       )
     );
+  };
+
+  const handleToggleHidden = async (family: string) => {
+    const newHiddenFamilies = new Set(hiddenFamilies);
+    if (newHiddenFamilies.has(family)) {
+      newHiddenFamilies.delete(family);
+    } else {
+      newHiddenFamilies.add(family);
+    }
+    setHiddenFamilies(newHiddenFamilies);
+
+    // TODO: Save to database via API
+    try {
+      await fetch('/api/inventory/toggle-family', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          family,
+          hidden: newHiddenFamilies.has(family),
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to toggle family visibility:', error);
+    }
   };
 
   const handleExport = async () => {
@@ -171,40 +231,46 @@ export default function InventoryGrid({ inventory: initialInventory }: Inventory
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="border rounded-lg p-4 bg-card">
           <div className="text-sm text-muted-foreground">总计</div>
-          <div className="text-2xl font-bold">{filteredInventory.length}</div>
+          <div className="text-2xl font-bold">{groupedInventory.totalCount}</div>
         </div>
         <div className="border rounded-lg p-4 bg-card">
           <div className="text-sm text-muted-foreground">有库存</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-500">
-            {filteredInventory.filter(i => i.quantity > 10).length}
+            {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity > 10).length}
           </div>
         </div>
         <div className="border rounded-lg p-4 bg-card border-yellow-200 dark:border-yellow-800">
           <div className="text-sm text-muted-foreground">低库存</div>
           <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">
-            {filteredInventory.filter(i => i.quantity > 0 && i.quantity <= 10).length}
+            {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity > 0 && i.quantity <= 10).length}
           </div>
         </div>
         <div className="border rounded-lg p-4 bg-card border-red-200 dark:border-red-800">
           <div className="text-sm text-muted-foreground">缺货</div>
           <div className="text-2xl font-bold text-red-600 dark:text-red-500">
-            {filteredInventory.filter(i => i.quantity === 0).length}
+            {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity === 0).length}
           </div>
         </div>
       </div>
 
-      {/* Inventory grid - more compact */}
-      <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-        {filteredInventory.map((item) => (
-          <ColorCard
-            key={item.id}
-            item={item}
-            onQuantityUpdate={handleQuantityUpdate}
-          />
-        ))}
+      {/* Inventory by family groups */}
+      <div className="space-y-6">
+        {groupedInventory.families.map((family) => {
+          const items = groupedInventory.items.get(family) || [];
+          return (
+            <FamilyGroup
+              key={family}
+              family={family}
+              items={items}
+              onQuantityUpdate={handleQuantityUpdate}
+              isHidden={hiddenFamilies.has(family)}
+              onToggleHidden={handleToggleHidden}
+            />
+          );
+        })}
       </div>
 
-      {filteredInventory.length === 0 && (
+      {groupedInventory.totalCount === 0 && (
         <div className="text-center py-12 text-muted-foreground">
           搜索 &quot;{searchQuery}&quot; - 没有找到结果
         </div>

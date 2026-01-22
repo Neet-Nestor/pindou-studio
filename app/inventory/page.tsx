@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { userInventory, colors, colorSets, userColorCustomizations } from '@/lib/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { userInventory, colors, colorSets, userColorCustomizations, userHiddenColors } from '@/lib/db/schema';
+import { eq, and, isNull } from 'drizzle-orm';
 import InventoryGrid from '@/components/inventory/inventory-grid';
 import { Button } from '@/components/ui/button';
 import { signOut } from '@/lib/auth';
@@ -57,6 +57,23 @@ export default async function InventoryPage() {
     )
     .where(eq(userInventory.userId, session.user.id));
 
+  // Fetch hidden families (where colorCode is null, meaning entire family is hidden)
+  const hiddenFamiliesData = await db
+    .select({
+      family: userHiddenColors.family,
+    })
+    .from(userHiddenColors)
+    .where(
+      and(
+        eq(userHiddenColors.userId, session.user.id),
+        isNull(userHiddenColors.colorCode)
+      )
+    );
+
+  const hiddenFamilies = hiddenFamiliesData
+    .map((row) => row.family)
+    .filter((f): f is string => f !== null);
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b bg-background">
@@ -99,7 +116,7 @@ export default async function InventoryPage() {
               </p>
             </div>
           ) : (
-            <InventoryGrid inventory={inventory} />
+            <InventoryGrid inventory={inventory} initialHiddenFamilies={hiddenFamilies} />
           )}
         </div>
       </main>

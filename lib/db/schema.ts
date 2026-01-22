@@ -73,12 +73,22 @@ export const inventoryHistory = pgTable('inventory_history', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// User hidden colors table - tracks which families or individual colors users want to hide
+export const userHiddenColors = pgTable('user_hidden_colors', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  family: text('family'), // e.g., 'A', 'B', 'ZG' - when set without colorCode, hides entire family
+  colorCode: text('color_code'), // e.g., 'A5', 'B12' - when set, hides specific color
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   inventory: many(userInventory),
   history: many(inventoryHistory),
   customColors: many(colors),
   colorCustomizations: many(userColorCustomizations),
+  hiddenColors: many(userHiddenColors),
 }));
 
 export const colorSetsRelations = relations(colorSets, ({ many }) => ({
@@ -132,6 +142,13 @@ export const inventoryHistoryRelations = relations(inventoryHistory, ({ one }) =
   }),
 }));
 
+export const userHiddenColorsRelations = relations(userHiddenColors, ({ one }) => ({
+  user: one(users, {
+    fields: [userHiddenColors.userId],
+    references: [users.id],
+  }),
+}));
+
 // Types for TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -150,3 +167,6 @@ export type NewInventoryHistory = typeof inventoryHistory.$inferInsert;
 
 export type UserColorCustomization = typeof userColorCustomizations.$inferSelect;
 export type NewUserColorCustomization = typeof userColorCustomizations.$inferInsert;
+
+export type UserHiddenColor = typeof userHiddenColors.$inferSelect;
+export type NewUserHiddenColor = typeof userHiddenColors.$inferInsert;
