@@ -28,17 +28,11 @@ export default async function InventoryPage() {
       color: {
         id: colors.id,
         code: colors.code,
-        name: colors.name,
-        nameEn: colors.nameEn,
-        nameZh: colors.nameZh,
         hexColor: colors.hexColor,
       },
       customizationRaw: {
         id: userColorCustomizations.id,
         customCode: userColorCustomizations.customCode,
-        customName: userColorCustomizations.customName,
-        customNameEn: userColorCustomizations.customNameEn,
-        customNameZh: userColorCustomizations.customNameZh,
         customHexColor: userColorCustomizations.customHexColor,
         pieceId: userColorCustomizations.pieceId,
         notes: userColorCustomizations.notes,

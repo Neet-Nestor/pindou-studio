@@ -35,7 +35,6 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
         },
         body: JSON.stringify({
           code: formData.pieceId, // Use pieceId as code
-          nameZh: formData.pieceId, // Use pieceId as name
           pieceId: formData.pieceId,
           hexColor: formData.hexColor,
           initialQuantity: formData.initialQuantity,

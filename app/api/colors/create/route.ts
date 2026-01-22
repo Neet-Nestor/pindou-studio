@@ -6,8 +6,6 @@ import { z } from 'zod';
 
 const createColorSchema = z.object({
   code: z.string().min(1, 'Color code is required'),
-  nameZh: z.string().min(1, 'Chinese name is required'),
-  nameEn: z.string().optional(),
   hexColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color'),
   pieceId: z.string().optional(),
   initialQuantity: z.string().optional(),
@@ -33,9 +31,6 @@ export async function POST(request: Request) {
       .insert(colors)
       .values({
         code: validatedData.pieceId || validatedData.code,
-        name: validatedData.nameZh,
-        nameEn: validatedData.nameEn || null,
-        nameZh: validatedData.nameZh,
         hexColor: validatedData.hexColor,
         userId: session.user.id,
       })

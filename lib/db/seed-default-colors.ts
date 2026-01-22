@@ -20,8 +20,6 @@ export async function seedDefaultColors() {
     // Insert all colors (code is globally unique)
     const colorInserts = defaultColors.map((color) => ({
       code: color.code,
-      name: color.name,
-      nameZh: color.name,
       hexColor: color.hexColor,
       userId: null, // System colors, not user-created
     }));

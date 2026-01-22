@@ -16,9 +16,6 @@ export const users = pgTable('users', {
 export const colors = pgTable('colors', {
   id: uuid('id').primaryKey().defaultRandom(),
   code: text('code').notNull().unique(), // Globally unique color code
-  name: text('name').notNull(),
-  nameEn: text('name_en'),
-  nameZh: text('name_zh'),
   hexColor: text('hex_color').notNull(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }), // For user-created custom colors
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -30,9 +27,6 @@ export const userColorCustomizations = pgTable('user_color_customizations', {
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
   colorId: uuid('color_id').references(() => colors.id, { onDelete: 'cascade' }).notNull(),
   customCode: text('custom_code'),
-  customName: text('custom_name'),
-  customNameEn: text('custom_name_en'),
-  customNameZh: text('custom_name_zh'),
   customHexColor: text('custom_hex_color'),
   pieceId: text('piece_id'), // Specific piece ID from user's physical beads
   notes: text('notes'),

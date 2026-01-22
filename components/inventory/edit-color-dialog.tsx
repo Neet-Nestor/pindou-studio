@@ -14,16 +14,10 @@ interface EditColorDialogProps {
   color: {
     id: string;
     code: string;
-    name: string;
-    nameEn: string | null;
-    nameZh: string | null;
     hexColor: string;
   };
   customization?: {
     customCode: string | null;
-    customName: string | null;
-    customNameEn: string | null;
-    customNameZh: string | null;
     customHexColor: string | null;
     pieceId: string | null;
     notes: string | null;

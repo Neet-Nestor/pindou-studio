@@ -8,8 +8,6 @@ import { z } from 'zod';
 const customizeColorSchema = z.object({
   colorId: z.string().uuid(),
   customCode: z.string().optional(),
-  customNameZh: z.string().optional(),
-  customNameEn: z.string().optional(),
   customHexColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().or(z.literal('')),
   pieceId: z.string().optional(),
   notes: z.string().optional(),
@@ -45,8 +43,6 @@ export async function POST(request: Request) {
       userId: session.user.id,
       colorId: validatedData.colorId,
       customCode: validatedData.customCode || null,
-      customNameZh: validatedData.customNameZh || null,
-      customNameEn: validatedData.customNameEn || null,
       customHexColor: validatedData.customHexColor || null,
       pieceId: validatedData.pieceId || null,
       notes: validatedData.notes || null,

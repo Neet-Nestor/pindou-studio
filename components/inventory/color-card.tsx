@@ -12,17 +12,11 @@ interface ColorCardProps {
     color: {
       id: string;
       code: string;
-      name: string;
-      nameEn: string | null;
-      nameZh: string | null;
       hexColor: string;
     } | null;
     customization: {
       id: string;
       customCode: string | null;
-      customName: string | null;
-      customNameEn: string | null;
-      customNameZh: string | null;
       customHexColor: string | null;
       pieceId: string | null;
       notes: string | null;

@@ -8,6 +8,13 @@
       "when": 1769040203929,
       "tag": "0000_cute_wildside",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769109821101,
+      "tag": "0001_real_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

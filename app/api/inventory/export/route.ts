@@ -22,9 +22,6 @@ export async function GET() {
         customColor: userInventory.customColor,
         color: {
           code: colors.code,
-          name: colors.name,
-          nameEn: colors.nameEn,
-          nameZh: colors.nameZh,
           hexColor: colors.hexColor,
         },
       })
@@ -40,9 +37,6 @@ export async function GET() {
       totalColors: inventory.length,
       inventory: inventory.map((item) => ({
         colorCode: item.color?.code,
-        colorName: item.color?.name,
-        colorNameEn: item.color?.nameEn,
-        colorNameZh: item.color?.nameZh,
         hexColor: item.color?.hexColor,
         quantity: item.quantity,
         customColor: item.customColor,

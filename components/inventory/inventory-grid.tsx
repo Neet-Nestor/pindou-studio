@@ -20,17 +20,11 @@ interface InventoryItem {
   color: {
     id: string;
     code: string;
-    name: string;
-    nameEn: string | null;
-    nameZh: string | null;
     hexColor: string;
   } | null;
   customization: {
     id: string;
     customCode: string | null;
-    customName: string | null;
-    customNameEn: string | null;
-    customNameZh: string | null;
     customHexColor: string | null;
     pieceId: string | null;
     notes: string | null;
@@ -132,9 +126,7 @@ export default function InventoryGrid({
 
       const matchesSearch =
         item.color.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.color.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.color.nameEn?.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (item.color.nameZh?.toLowerCase().includes(searchQuery.toLowerCase()));
+        (item.customization?.pieceId?.toLowerCase().includes(searchQuery.toLowerCase()));
 
       const matchesStock =
         stockFilter === 'all' ||
@@ -326,7 +318,7 @@ export default function InventoryGrid({
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
           <Input
-            placeholder="搜索颜色代码或名称"
+            placeholder="搜索颜色代码或片号"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 h-9 text-sm"
