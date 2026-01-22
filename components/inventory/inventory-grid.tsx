@@ -49,6 +49,29 @@ function extractFamily(code: string): string {
   return match ? match[1] : 'Other';
 }
 
+// Helper function for natural/numeric sorting of color codes
+function compareColorCodes(codeA: string, codeB: string): number {
+  // Extract family (letter prefix) and number
+  const matchA = codeA.match(/^([A-Z]+)(\d+)$/);
+  const matchB = codeB.match(/^([A-Z]+)(\d+)$/);
+
+  if (!matchA && !matchB) return codeA.localeCompare(codeB);
+  if (!matchA) return 1;
+  if (!matchB) return -1;
+
+  const [, familyA, numStrA] = matchA;
+  const [, familyB, numStrB] = matchB;
+
+  // First compare families alphabetically
+  const familyCompare = familyA.localeCompare(familyB);
+  if (familyCompare !== 0) return familyCompare;
+
+  // Then compare numbers numerically
+  const numA = parseInt(numStrA, 10);
+  const numB = parseInt(numStrB, 10);
+  return numA - numB;
+}
+
 export default function InventoryGrid({
   inventory: initialInventory,
   initialHiddenFamilies = [],
@@ -126,10 +149,11 @@ export default function InventoryGrid({
       if (sortBy === 'quantity') {
         const qtyDiff = (b.quantity || 0) - (a.quantity || 0);
         if (qtyDiff !== 0) return qtyDiff;
-        // Secondary sort by code when quantities are equal
-        return (a.color?.code || '').localeCompare(b.color?.code || '');
+        // Secondary sort by code when quantities are equal (numeric sort)
+        return compareColorCodes(a.color?.code || '', b.color?.code || '');
       } else {
-        return (a.color?.code || '').localeCompare(b.color?.code || '');
+        // Sort by code with numeric ordering
+        return compareColorCodes(a.color?.code || '', b.color?.code || '');
       }
     });
 

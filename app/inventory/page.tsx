@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { userInventory, colors, userColorCustomizations, userHiddenColors } from '@/lib/db/schema';
-import { eq, and, isNull, isNotNull } from 'drizzle-orm';
+import { eq, and, isNull, isNotNull, sql } from 'drizzle-orm';
 import InventoryGrid from '@/components/inventory/inventory-grid';
 import EmptyInventory from '@/components/inventory/empty-inventory';
 import { Button } from '@/components/ui/button';
@@ -58,6 +58,10 @@ export default async function InventoryPage() {
         eq(userColorCustomizations.colorId, colors.id),
         eq(userColorCustomizations.userId, session.user.id)
       )
+    )
+    .orderBy(
+      sql`SUBSTRING(${colors.code} FROM '^([A-Z]+)')`,
+      sql`CAST(SUBSTRING(${colors.code} FROM '([0-9]+)$') AS INTEGER)`
     );
 
   // Transform inventory: handle colors without inventory records (default to quantity 0)
