@@ -103,9 +103,9 @@ export default function FamilyGroup({
         </Button>
       </div>
 
-      {/* Family Items - Responsive grid for square cards, denser on mobile */}
+      {/* Family Items - Responsive grid for square cards, very dense layout */}
       {isExpanded && (
-        <div className="grid gap-1.5 md:gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8">
+        <div className="grid gap-1.5 md:gap-2 grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
           {items.map((item) => (
             <ColorCard
               key={item.id}

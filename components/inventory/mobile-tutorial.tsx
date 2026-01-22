@@ -24,12 +24,13 @@ export function MobileTutorial({ open, onOpenChange }: MobileTutorialProps) {
         <div className="space-y-4 text-sm">
           <div className="space-y-2">
             <div className="font-semibold flex items-center gap-2">
-              📱 触摸操作
+              📱 快速操作
             </div>
             <ul className="space-y-1.5 text-muted-foreground">
-              <li>• <strong>点击数量</strong> - 直接输入数字</li>
-              <li>• <strong>点击 +/-</strong> - 增减数量</li>
-              <li>• <strong>长按颜色</strong> - 编辑片号和备注</li>
+              <li>• <strong>点击颜色卡片</strong> - 打开数量编辑</li>
+              <li>• <strong>输入 +50</strong> - 增加 50 颗</li>
+              <li>• <strong>输入 -15</strong> - 减少 15 颗</li>
+              <li>• <strong>输入 100</strong> - 直接设为 100 颗</li>
             </ul>
           </div>
 
@@ -66,20 +67,19 @@ export function MobileTutorial({ open, onOpenChange }: MobileTutorialProps) {
   );
 }
 
-export function MobileTutorialBanner() {
+export function TutorialBanner() {
   const [showBanner, setShowBanner] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
     // Check if user has permanently dismissed the banner
-    const isPermanentlyDismissed = localStorage.getItem('hideMobileTutorialPermanently') === 'true';
-    const isMobile = window.innerWidth < 768;
+    const isPermanentlyDismissed = localStorage.getItem('hideTutorialPermanently') === 'true';
 
     // Force show if ?tutorial=1 in URL (for testing)
     const forceShow = new URLSearchParams(window.location.search).get('tutorial') === '1';
 
-    if ((forceShow || (!isPermanentlyDismissed && isMobile))) {
+    if ((forceShow || !isPermanentlyDismissed)) {
       // Show banner after a short delay
       const timer = setTimeout(() => {
         setShowBanner(true);
@@ -96,7 +96,7 @@ export function MobileTutorialBanner() {
   const handleConfirmPermanent = () => {
     setShowBanner(false);
     setShowConfirmDialog(false);
-    localStorage.setItem('hideMobileTutorialPermanently', 'true');
+    localStorage.setItem('hideTutorialPermanently', 'true');
   };
 
   const handleConfirmTemporary = () => {
@@ -114,13 +114,13 @@ export function MobileTutorialBanner() {
   return (
     <>
       {showBanner && (
-        <div className="md:hidden bg-primary/10 border-b border-primary/20 px-4 py-3 animate-in slide-in-from-top">
-          <div className="flex items-start gap-3">
+        <div className="bg-primary/10 border-b border-primary/20 px-4 py-3 animate-in slide-in-from-top">
+          <div className="flex items-start gap-3 max-w-5xl mx-auto">
             <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
             <div className="flex-1 space-y-1 min-w-0">
               <p className="text-sm font-medium">使用提示</p>
-              <p className="text-xs text-muted-foreground">
-                <strong>长按颜色</strong>可编辑片号 • 点击<strong>数量</strong>快速输入
+              <p className="text-xs md:text-sm text-muted-foreground">
+                <strong>点击卡片</strong>更新数量 • 支持输入 <strong>+50</strong> 增加或 <strong>-15</strong> 减少 • 直接输入数字设置精确值
               </p>
             </div>
             <div className="flex gap-1 flex-shrink-0">

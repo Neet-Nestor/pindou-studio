@@ -10,7 +10,7 @@ import { Search, Download, Upload, Plus, List, LayoutGrid, RotateCcw, Eye } from
 import AddCustomColorDialog from './add-custom-color-dialog';
 import FamilyGroup from './family-group';
 import ColorCard from './color-card';
-import { MobileTutorialBanner } from './mobile-tutorial';
+import { TutorialBanner } from './mobile-tutorial';
 
 interface InventoryItem {
   id: string;
@@ -88,7 +88,7 @@ export default function InventoryGrid({
   const [isResetting, setIsResetting] = useState(false);
   const [hiddenFamilies, setHiddenFamilies] = useState<Set<string>>(new Set(initialHiddenFamilies));
   const [hiddenColors, setHiddenColors] = useState<Set<string>>(new Set(initialHiddenColors));
-  const [groupByFamily, setGroupByFamily] = useState(false);
+  const [groupByFamily, setGroupByFamily] = useState(true);
 
   // Sync inventory state when prop changes (after router.refresh())
   useEffect(() => {
@@ -318,8 +318,8 @@ export default function InventoryGrid({
 
   return (
     <div className="space-y-4">
-      {/* Mobile tutorial banner - shows on first visit */}
-      <MobileTutorialBanner />
+      {/* Tutorial banner - shows on first visit */}
+      <TutorialBanner />
 
       {/* Search and filters - Compact, sticky on mobile */}
       <div className="flex flex-col gap-2 md:flex-row md:items-center sticky top-12 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 z-10 py-2 -mx-4 px-4 md:static md:bg-transparent md:backdrop-blur-none md:p-0 md:m-0">
@@ -427,8 +427,8 @@ export default function InventoryGrid({
 
       {/* Inventory display - grouped or ungrouped */}
       {!groupByFamily ? (
-        // Ungrouped view - flat grid, denser on mobile
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-1.5 md:gap-2">
+        // Ungrouped view - flat grid, very dense layout
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-1.5 md:gap-2">
           {groupedInventory.items.get('all')?.map((item) => (
             <ColorCard
               key={item.id}
