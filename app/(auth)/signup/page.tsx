@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Palette } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function SignupPage() {
@@ -55,7 +55,7 @@ export default function SignupPage() {
         <ThemeToggle />
       </div>
       <Link href="/" className="flex items-center gap-2 mb-8 text-2xl font-bold hover:opacity-80 transition-opacity">
-        <Palette className="h-7 w-7" />
+        <Image src="/icon.png" alt="拼豆Studio" width={32} height={32} className="h-8 w-8" />
         <span>拼豆Studio</span>
       </Link>
       <Card className="w-full max-w-md">

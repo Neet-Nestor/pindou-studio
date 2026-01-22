@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import Image from 'next/image';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { userInventory, colors, colorSets, userColorCustomizations, userHiddenColors } from '@/lib/db/schema';
@@ -105,7 +106,10 @@ export default async function InventoryPage() {
     <div className="flex min-h-screen flex-col">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto flex h-12 items-center justify-between px-4">
-          <h1 className="text-lg font-bold">拼豆Studio</h1>
+          <div className="flex items-center gap-2">
+            <Image src="/icon.png" alt="拼豆Studio" width={28} height={28} className="h-7 w-7" />
+            <h1 className="text-lg font-bold">拼豆Studio</h1>
+          </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <form

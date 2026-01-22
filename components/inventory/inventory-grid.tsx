@@ -131,7 +131,7 @@ export default function InventoryGrid({
 
     // Sort families according to colorFamilies order
     const sortedFamilies = colorFamilies.filter((f) => grouped.has(f));
-    const otherFamilies = Array.from(grouped.keys()).filter((f) => !colorFamilies.includes(f));
+    const otherFamilies = Array.from(grouped.keys()).filter((f) => !sortedFamilies.includes(f));
     const allFamilies = [...sortedFamilies, ...otherFamilies];
 
     return {

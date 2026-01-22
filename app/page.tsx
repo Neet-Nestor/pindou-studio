@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, Search, Download, Palette, Cloud, Sparkles } from 'lucide-react';
@@ -11,7 +12,7 @@ export default function Home() {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <Palette className="h-6 w-6" />
+            <Image src="/icon.png" alt="拼豆Studio" width={32} height={32} className="h-8 w-8" />
             <h1 className="text-xl font-bold">拼豆Studio</h1>
           </div>
           <div className="flex items-center gap-3">

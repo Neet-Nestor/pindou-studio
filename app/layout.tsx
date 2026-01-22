@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "拼豆Studio",
   description: "专业的拼豆库存管理工具，支持多品牌颜色套装",
+  icons: {
+    icon: '/icon.png',
+  },
 };
 
 export default function RootLayout({
