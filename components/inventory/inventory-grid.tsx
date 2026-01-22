@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -61,6 +61,11 @@ export default function InventoryGrid({
   const [sortBy, setSortBy] = useState<'code' | 'name' | 'quantity'>('code');
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
   const [hiddenFamilies, setHiddenFamilies] = useState<Set<string>>(new Set(initialHiddenFamilies));
+
+  // Sync inventory state when prop changes (after router.refresh())
+  useEffect(() => {
+    setInventory(initialInventory);
+  }, [initialInventory]);
 
   // Filter, sort, and group inventory by family
   const groupedInventory = useMemo(() => {
@@ -172,88 +177,89 @@ export default function InventoryGrid({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Search and filters */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center">
+    <div className="space-y-4">
+      {/* Search and filters - Compact */}
+      <div className="flex flex-col gap-2 md:flex-row md:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
           <Input
             placeholder="搜索颜色代码或名称"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-9 h-9 text-sm"
           />
         </div>
 
         <Select value={stockFilter} onValueChange={(value) => setStockFilter(value as typeof stockFilter)}>
-          <SelectTrigger className="w-full md:w-[160px]">
+          <SelectTrigger className="w-full md:w-[120px] h-9 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">全部状态</SelectItem>
-            <SelectItem value="in-stock">有库存</SelectItem>
-            <SelectItem value="low-stock">低库存</SelectItem>
-            <SelectItem value="out-of-stock">缺货</SelectItem>
+            <SelectItem value="all" className="text-xs">全部</SelectItem>
+            <SelectItem value="in-stock" className="text-xs">有库存</SelectItem>
+            <SelectItem value="low-stock" className="text-xs">低库存</SelectItem>
+            <SelectItem value="out-of-stock" className="text-xs">缺货</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'code' | 'name' | 'quantity')}>
-          <SelectTrigger className="w-full md:w-[160px]">
+          <SelectTrigger className="w-full md:w-[120px] h-9 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="code">按代码排序</SelectItem>
-            <SelectItem value="name">按名称排序</SelectItem>
-            <SelectItem value="quantity">按数量排序</SelectItem>
+            <SelectItem value="code" className="text-xs">按代码</SelectItem>
+            <SelectItem value="name" className="text-xs">按名称</SelectItem>
+            <SelectItem value="quantity" className="text-xs">按数量</SelectItem>
           </SelectContent>
         </Select>
 
-        <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={handleExport} title="导出">
-            <Download className="h-4 w-4" />
+        <div className="flex gap-1.5">
+          <Button variant="outline" size="icon" onClick={handleExport} title="导出" className="h-9 w-9">
+            <Download className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="outline" size="icon" title="导入">
-            <Upload className="h-4 w-4" />
+          <Button variant="outline" size="icon" title="导入" className="h-9 w-9">
+            <Upload className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="outline"
             size="icon"
             title="添加自定义颜色"
             onClick={() => setShowAddColorDialog(true)}
+            className="h-9 w-9"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>
 
-      {/* Stock Insights */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="border rounded-lg p-4 bg-card">
-          <div className="text-sm text-muted-foreground">总计</div>
-          <div className="text-2xl font-bold">{groupedInventory.totalCount}</div>
+      {/* Stock Insights - Compact */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div className="rounded-md p-2.5 bg-gradient-to-br from-card to-muted/20 border shadow-sm">
+          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">总计</div>
+          <div className="text-xl font-bold mt-0.5">{groupedInventory.totalCount}</div>
         </div>
-        <div className="border rounded-lg p-4 bg-card">
-          <div className="text-sm text-muted-foreground">有库存</div>
-          <div className="text-2xl font-bold text-green-600 dark:text-green-500">
+        <div className="rounded-md p-2.5 bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-200 dark:border-green-900 shadow-sm">
+          <div className="text-[10px] text-green-700 dark:text-green-400 font-medium uppercase tracking-wide">有库存</div>
+          <div className="text-xl font-bold text-green-600 dark:text-green-400 mt-0.5">
             {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity > 10).length}
           </div>
         </div>
-        <div className="border rounded-lg p-4 bg-card border-yellow-200 dark:border-yellow-800">
-          <div className="text-sm text-muted-foreground">低库存</div>
-          <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">
+        <div className="rounded-md p-2.5 bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-200 dark:border-yellow-900 shadow-sm">
+          <div className="text-[10px] text-yellow-700 dark:text-yellow-400 font-medium uppercase tracking-wide">低库存</div>
+          <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400 mt-0.5">
             {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity > 0 && i.quantity <= 10).length}
           </div>
         </div>
-        <div className="border rounded-lg p-4 bg-card border-red-200 dark:border-red-800">
-          <div className="text-sm text-muted-foreground">缺货</div>
-          <div className="text-2xl font-bold text-red-600 dark:text-red-500">
+        <div className="rounded-md p-2.5 bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-200 dark:border-red-900 shadow-sm">
+          <div className="text-[10px] text-red-700 dark:text-red-400 font-medium uppercase tracking-wide">缺货</div>
+          <div className="text-xl font-bold text-red-600 dark:text-red-400 mt-0.5">
             {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity === 0).length}
           </div>
         </div>
       </div>
 
-      {/* Inventory by family groups */}
-      <div className="space-y-6">
+      {/* Inventory by family groups - Compact spacing */}
+      <div className="space-y-4">
         {groupedInventory.families.map((family) => {
           const items = groupedInventory.items.get(family) || [];
           return (
@@ -270,7 +276,7 @@ export default function InventoryGrid({
       </div>
 
       {groupedInventory.totalCount === 0 && (
-        <div className="text-center py-12 text-muted-foreground">
+        <div className="text-center py-8 text-muted-foreground text-sm">
           搜索 &quot;{searchQuery}&quot; - 没有找到结果
         </div>
       )}

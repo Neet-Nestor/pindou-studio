@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Minus, Plus, Edit2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import EditColorDialog from './edit-color-dialog';
 
 interface ColorCardProps {
@@ -51,7 +50,6 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
   const displayCode = item.customization?.customCode || item.color.code;
   const displayHexColor = item.customization?.customHexColor || item.color.hexColor;
   const displayPieceId = item.customization?.pieceId;
-  const colorName = item.customization?.customNameZh || item.color.nameZh || item.color.name;
 
   const updateQuantity = async (newQuantity: number) => {
     if (newQuantity < 0) return;
@@ -96,121 +94,102 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
 
   return (
     <>
-      <div className="group border rounded-lg p-3 hover:border-primary/50 transition-colors bg-card relative">
-        {/* Status badges - top right */}
-        <div className="absolute top-2 right-2 flex gap-1">
+      <div className={`group relative rounded-lg overflow-hidden border bg-card transition-all hover:shadow-lg hover:border-primary/50 ${
+        isOutOfStock ? 'opacity-50' : ''
+      }`}>
+        {/* Large color swatch - PROMINENT */}
+        <div
+          className="w-full aspect-square relative"
+          style={{ backgroundColor: displayHexColor }}
+        >
+          {/* Status indicator - top right corner */}
           {isOutOfStock && (
-            <Badge variant="destructive" className="text-[10px] h-4 px-1.5">
-              缺货
-            </Badge>
+            <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-white shadow-sm" />
           )}
-          {isLowStock && (
-            <Badge className="text-[10px] h-4 px-1.5 bg-yellow-500 text-white border-yellow-600">
-              低库存
-            </Badge>
+          {isLowStock && !isOutOfStock && (
+            <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-yellow-500 border border-white shadow-sm" />
           )}
+
+          {/* Edit button on hover */}
+          <Button
+            size="icon"
+            variant="secondary"
+            className="absolute top-1 left-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+            onClick={() => setShowEditDialog(true)}
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
         </div>
 
-        <div className="flex items-start gap-3">
-          {/* Small color swatch - de-emphasized */}
-          <div
-            className="w-8 h-8 rounded border shrink-0 mt-1"
-            style={{ backgroundColor: displayHexColor }}
-          />
+        {/* Minimal info bar */}
+        <div className="px-2 py-1.5 bg-background/95 backdrop-blur space-y-1">
+          {/* Piece ID - large and clear */}
+          <div className="font-bold text-sm text-center truncate">
+            {displayPieceId || displayCode}
+          </div>
 
-          {/* Main content - piece name emphasized */}
-          <div className="flex-1 min-w-0 space-y-2">
-            {/* Piece ID/Name - PROMINENT */}
-            <div className="space-y-0.5">
-              <div className="flex items-baseline gap-2">
-                <span className="font-bold text-base truncate">
-                  {displayPieceId || displayCode}
-                </span>
+          {/* Notes - visible but compact */}
+          {item.customization?.notes && (
+            <div className="text-[10px] text-muted-foreground text-center leading-tight truncate px-1" title={item.customization.notes}>
+              {item.customization.notes}
+            </div>
+          )}
+
+          {/* Quantity controls - clean and simple */}
+          <div className="flex items-center justify-center gap-1">
+            {showInput ? (
+              <>
+                <Input
+                  type="number"
+                  min="0"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleInputSubmit()}
+                  onBlur={handleInputSubmit}
+                  className="h-7 text-xs text-center w-16"
+                  autoFocus
+                />
                 <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                  onClick={() => setShowEditDialog(true)}
+                  size="sm"
+                  onClick={handleInputSubmit}
+                  disabled={isUpdating}
+                  className="h-7 w-7 p-0"
                 >
-                  <Edit2 className="h-3 w-3" />
+                  <Plus className="h-3 w-3 rotate-45" />
                 </Button>
-              </div>
-              <p className="text-xs text-muted-foreground truncate">
-                {colorName}
-              </p>
-              {item.colorSet && (
-                <p className="text-[10px] text-muted-foreground">
-                  {item.colorSet.brand}
-                </p>
-              )}
-            </div>
-
-            {/* Quantity controls - compact */}
-            <div className="flex items-center gap-2">
-              {showInput ? (
-                <>
-                  <Input
-                    type="number"
-                    min="0"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleInputSubmit()}
-                    onBlur={handleInputSubmit}
-                    className="h-7 text-sm w-20"
-                    autoFocus
-                  />
-                  <Button
-                    size="sm"
-                    onClick={handleInputSubmit}
-                    disabled={isUpdating}
-                    className="h-7 px-2"
-                  >
-                    确定
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <div
-                    className="font-bold text-lg cursor-pointer hover:text-primary min-w-[2rem] text-center"
-                    onClick={() => {
-                      setShowInput(true);
-                      setInputValue(item.quantity.toString());
-                    }}
-                  >
-                    {item.quantity}
-                  </div>
-                  <div className="flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleQuickAdjust(-1)}
-                      disabled={isUpdating || item.quantity < 1}
-                      className="h-7 w-7 p-0"
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleQuickAdjust(1)}
-                      disabled={isUpdating}
-                      className="h-7 w-7 p-0"
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleQuickAdjust(5)}
-                      disabled={isUpdating}
-                      className="h-7 px-2"
-                    >
-                      +5
-                    </Button>
-                  </div>
-                </>
-              )}
-            </div>
+              </>
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleQuickAdjust(-1)}
+                  disabled={isUpdating || item.quantity < 1}
+                  className="h-7 w-7 p-0"
+                >
+                  <Minus className="h-3 w-3" />
+                </Button>
+                <div
+                  className="font-bold text-lg cursor-pointer hover:text-primary transition-colors min-w-[2.5rem] text-center"
+                  onClick={() => {
+                    setShowInput(true);
+                    setInputValue(item.quantity.toString());
+                  }}
+                  title="点击编辑"
+                >
+                  {item.quantity}
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleQuickAdjust(1)}
+                  disabled={isUpdating}
+                  className="h-7 w-7 p-0"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -17,11 +17,8 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    code: '',
-    nameZh: '',
-    nameEn: '',
-    hexColor: '#808080',
     pieceId: '',
+    hexColor: '#808080',
     initialQuantity: '0',
     notes: '',
   });
@@ -36,7 +33,14 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          code: formData.pieceId, // Use pieceId as code
+          nameZh: formData.pieceId, // Use pieceId as name
+          pieceId: formData.pieceId,
+          hexColor: formData.hexColor,
+          initialQuantity: formData.initialQuantity,
+          notes: formData.notes,
+        }),
       });
 
       if (!response.ok) {
@@ -45,11 +49,8 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
 
       // Reset form and close dialog
       setFormData({
-        code: '',
-        nameZh: '',
-        nameEn: '',
-        hexColor: '#808080',
         pieceId: '',
+        hexColor: '#808080',
         initialQuantity: '0',
         notes: '',
       });
@@ -65,75 +66,50 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>添加自定义颜色</DialogTitle>
           <DialogDescription>
-            为您的库存创建一个新的自定义颜色
+            添加新颜色到库存
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="code">颜色代码 *</Label>
-            <Input
-              id="code"
-              value={formData.code}
-              onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-              placeholder="例如: C001"
-              required
+          {/* Color preview */}
+          <div className="flex items-center justify-center p-4">
+            <div
+              className="w-24 h-24 rounded-lg border-2 border-border shadow-lg"
+              style={{ backgroundColor: formData.hexColor }}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="pieceId">拼豆片号</Label>
+            <Label htmlFor="pieceId">拼豆片号 *</Label>
             <Input
               id="pieceId"
               value={formData.pieceId}
               onChange={(e) => setFormData({ ...formData, pieceId: e.target.value })}
-              placeholder="您拥有的实体拼豆包装上的片号"
-            />
-            <p className="text-xs text-muted-foreground">
-              您拥有的实体拼豆包装上的片号
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="nameZh">中文名称 *</Label>
-            <Input
-              id="nameZh"
-              value={formData.nameZh}
-              onChange={(e) => setFormData({ ...formData, nameZh: e.target.value })}
-              placeholder="例如: 自定义红色"
+              placeholder="例如: A1, B5, C12"
               required
+              className="text-base"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="nameEn">英文名称</Label>
-            <Input
-              id="nameEn"
-              value={formData.nameEn}
-              onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
-              placeholder="e.g., Custom Red"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="hexColor">颜色值 *</Label>
+            <Label htmlFor="hexColor">颜色 *</Label>
             <div className="flex gap-2">
               <Input
                 id="hexColor"
                 type="color"
                 value={formData.hexColor}
                 onChange={(e) => setFormData({ ...formData, hexColor: e.target.value })}
-                className="w-20 h-10 p-1 cursor-pointer"
+                className="w-16 h-10 p-1 cursor-pointer"
               />
               <Input
                 value={formData.hexColor}
                 onChange={(e) => setFormData({ ...formData, hexColor: e.target.value })}
                 placeholder="#808080"
-                pattern="^#[0-9A-Fa-f]{6}$"
+                className="flex-1 font-mono text-sm"
                 required
               />
             </div>
@@ -147,17 +123,25 @@ export default function AddCustomColorDialog({ open, onOpenChange }: AddCustomCo
               min="0"
               value={formData.initialQuantity}
               onChange={(e) => setFormData({ ...formData, initialQuantity: e.target.value })}
+              className="text-base"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">备注</Label>
+            <Label htmlFor="notes" className="flex items-center justify-between">
+              <span>备注 (可选)</span>
+              <span className="text-xs text-muted-foreground">
+                {formData.notes.length}/50
+              </span>
+            </Label>
             <Textarea
               id="notes"
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="添加颜色相关备注..."
-              rows={3}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value.slice(0, 50) })}
+              placeholder="添加备注..."
+              rows={2}
+              maxLength={50}
+              className="text-sm"
             />
           </div>
 

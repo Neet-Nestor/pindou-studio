@@ -1,53 +1,26 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { colors, userInventory } from '@/lib/db/schema';
-import { inArray } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
+import { seedDefaultColors, initializeUserInventory } from '@/lib/db/seed-default-colors';
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     const session = await auth();
 
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (!session?.user) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { colorSetIds } = await request.json();
+    // Ensure default colors are seeded
+    await seedDefaultColors();
 
-    if (!Array.isArray(colorSetIds) || colorSetIds.length === 0) {
-      return NextResponse.json(
-        { message: 'Invalid color set IDs' },
-        { status: 400 }
-      );
-    }
+    // Initialize user inventory
+    await initializeUserInventory(session.user.id!);
 
-    // Fetch all colors from selected color sets
-    const selectedColors = await db
-      .select()
-      .from(colors)
-      .where(inArray(colors.colorSetId, colorSetIds));
-
-    // Create inventory entries for all selected colors
-    const inventoryEntries = selectedColors.map((color) => ({
-      userId: session.user.id,
-      colorId: color.id,
-      quantity: 0,
-      customColor: false,
-    }));
-
-    await db.insert(userInventory).values(inventoryEntries);
-
-    return NextResponse.json({
-      message: 'Inventory initialized successfully',
-      count: inventoryEntries.length,
-    });
+    return NextResponse.json({ success: true, message: 'Inventory initialized with 221 colors' });
   } catch (error) {
-    console.error('Error initializing inventory:', error);
+    console.error('Initialize inventory error:', error);
     return NextResponse.json(
-      { message: 'An error occurred while initializing inventory' },
+      { message: 'An error occurred', error: String(error) },
       { status: 500 }
     );
   }

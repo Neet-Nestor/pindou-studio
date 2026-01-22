@@ -56,54 +56,63 @@ export default function FamilyGroup({
   const totalCount = items.length;
 
   return (
-    <div className="space-y-3">
-      {/* Family Header */}
-      <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3 border">
-        <div className="flex items-center gap-3">
+    <div className="space-y-2">
+      {/* Family Header - Compact and modern */}
+      <div
+        className="group flex items-center justify-between px-3 py-2 rounded-md bg-gradient-to-r from-muted/50 to-muted/30 border hover:border-primary/30 transition-all cursor-pointer"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => setIsExpanded(!isExpanded)}
+            className="h-6 w-6 p-0 hover:bg-transparent"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
           >
             {isExpanded ? (
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-3.5 w-3.5 transition-transform" />
             ) : (
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-3.5 w-3.5 transition-transform" />
             )}
           </Button>
 
-          <div>
-            <h3 className="font-bold text-lg">{family} 系列</h3>
-            <p className="text-xs text-muted-foreground">
-              {inStockCount} / {totalCount} 有库存
-            </p>
+          <div className="flex items-baseline gap-2">
+            <h3 className="font-semibold text-base">{family}</h3>
+            <span className="text-xs text-muted-foreground font-medium">
+              {inStockCount}/{totalCount}
+            </span>
           </div>
         </div>
 
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onToggleHidden(family)}
-          className="gap-2"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleHidden(family);
+          }}
+          className="h-7 gap-1.5 px-2 opacity-60 hover:opacity-100 transition-opacity"
         >
           {isHidden ? (
             <>
-              <EyeOff className="h-4 w-4" />
-              <span className="text-xs">已隐藏</span>
+              <EyeOff className="h-3 w-3" />
+              <span className="text-[10px]">已隐藏</span>
             </>
           ) : (
             <>
-              <Eye className="h-4 w-4" />
-              <span className="text-xs">隐藏此系列</span>
+              <Eye className="h-3 w-3" />
+              <span className="text-[10px]">隐藏</span>
             </>
           )}
         </Button>
       </div>
 
-      {/* Family Items */}
+      {/* Family Items - Responsive grid for square cards */}
       {isExpanded && !isHidden && (
-        <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
           {items.map((item) => (
             <ColorCard
               key={item.id}
@@ -115,8 +124,8 @@ export default function FamilyGroup({
       )}
 
       {isExpanded && isHidden && (
-        <div className="text-center py-8 text-muted-foreground text-sm">
-          此系列已隐藏。点击上方按钮显示。
+        <div className="text-center py-6 text-muted-foreground text-xs">
+          此系列已隐藏
         </div>
       )}
     </div>

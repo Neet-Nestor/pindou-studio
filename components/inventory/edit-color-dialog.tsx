@@ -39,22 +39,22 @@ export default function EditColorDialog({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    customCode: customization?.customCode || '',
-    customNameZh: customization?.customNameZh || '',
-    customNameEn: customization?.customNameEn || '',
-    customHexColor: customization?.customHexColor || '',
     pieceId: customization?.pieceId || '',
+    customHexColor: customization?.customHexColor || '',
     notes: customization?.notes || '',
   });
 
   useEffect(() => {
     if (open) {
+      console.log('Opening edit dialog with customization:', customization);
       setFormData({
-        customCode: customization?.customCode || '',
-        customNameZh: customization?.customNameZh || '',
-        customNameEn: customization?.customNameEn || '',
-        customHexColor: customization?.customHexColor || '',
         pieceId: customization?.pieceId || '',
+        customHexColor: customization?.customHexColor || '',
+        notes: customization?.notes || '',
+      });
+      console.log('Form data initialized:', {
+        pieceId: customization?.pieceId || '',
+        customHexColor: customization?.customHexColor || '',
         notes: customization?.notes || '',
       });
     }
@@ -64,27 +64,39 @@ export default function EditColorDialog({
     e.preventDefault();
     setIsLoading(true);
 
+    const payload = {
+      colorId: color.id,
+      pieceId: formData.pieceId || undefined,
+      customHexColor: formData.customHexColor || undefined,
+      notes: formData.notes || undefined,
+    };
+
+    console.log('Submitting customization:', payload);
+
     try {
       const response = await fetch('/api/colors/customize', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          colorId: color.id,
-          ...formData,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to customize color');
+        const errorData = await response.json();
+        console.error('API error:', errorData);
+        throw new Error(errorData.message || 'Failed to customize color');
       }
+
+      const result = await response.json();
+      console.log('Customization saved:', result);
+      console.log('Saved customization details:', JSON.stringify(result.customization, null, 2));
 
       onOpenChange(false);
       router.refresh();
     } catch (error) {
       console.error('Error customizing color:', error);
-      alert('Failed to customize color. Please try again.');
+      alert('保存失败: ' + (error instanceof Error ? error.message : '请重试'));
     } finally {
       setIsLoading(false);
     }
@@ -92,115 +104,74 @@ export default function EditColorDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>编辑颜色</DialogTitle>
+          <DialogTitle>编辑 {color.code}</DialogTitle>
           <DialogDescription>
-            自定义此颜色的信息以匹配您实际拥有的拼豆
+            自定义片号和备注
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Original color info */}
-          <div className="bg-muted/50 p-3 rounded-lg space-y-2">
-            <div className="text-sm font-medium">原始颜色</div>
-            <div className="flex items-center gap-3">
-              <div
-                className="w-12 h-12 rounded border-2 border-border"
-                style={{ backgroundColor: color.hexColor }}
-              />
-              <div className="flex-1">
-                <div className="font-mono text-sm font-semibold">{color.code}</div>
-                <div className="text-xs text-muted-foreground">
-                  {color.nameZh || color.name}
-                </div>
-                <div className="text-xs text-muted-foreground">{color.hexColor}</div>
-              </div>
+          {/* Color preview */}
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+            <div
+              className="w-16 h-16 rounded-lg border-2 border-border shadow-sm"
+              style={{ backgroundColor: formData.customHexColor || color.hexColor }}
+            />
+            <div className="flex-1">
+              <div className="font-mono text-lg font-bold">{color.code}</div>
             </div>
           </div>
 
-          {/* Custom code */}
-          <div className="space-y-2">
-            <Label htmlFor="customCode">
-              颜色代码 <span className="text-muted-foreground">(可选覆盖)</span>
-            </Label>
-            <Input
-              id="customCode"
-              value={formData.customCode}
-              onChange={(e) => setFormData({ ...formData, customCode: e.target.value })}
-              placeholder={color.code}
-            />
-          </div>
-
-          {/* Piece ID */}
+          {/* Piece ID - main field */}
           <div className="space-y-2">
             <Label htmlFor="pieceId">拼豆片号</Label>
             <Input
               id="pieceId"
               value={formData.pieceId}
               onChange={(e) => setFormData({ ...formData, pieceId: e.target.value })}
-              placeholder="您拥有的实体拼豆包装上的片号"
-            />
-            <p className="text-xs text-muted-foreground">您拥有的实体拼豆包装上的片号</p>
-          </div>
-
-          {/* Custom Chinese name */}
-          <div className="space-y-2">
-            <Label htmlFor="customNameZh">
-              中文名称 <span className="text-muted-foreground">(可选覆盖)</span>
-            </Label>
-            <Input
-              id="customNameZh"
-              value={formData.customNameZh}
-              onChange={(e) => setFormData({ ...formData, customNameZh: e.target.value })}
-              placeholder={color.nameZh || color.name}
+              placeholder={color.code}
+              className="text-base"
             />
           </div>
 
-          {/* Custom English name */}
+          {/* Custom hex color - optional */}
           <div className="space-y-2">
-            <Label htmlFor="customNameEn">
-              英文名称 <span className="text-muted-foreground">(可选覆盖)</span>
-            </Label>
-            <Input
-              id="customNameEn"
-              value={formData.customNameEn}
-              onChange={(e) => setFormData({ ...formData, customNameEn: e.target.value })}
-              placeholder={color.nameEn || color.name}
-            />
-          </div>
-
-          {/* Custom hex color */}
-          <div className="space-y-2">
-            <Label htmlFor="customHexColor">
-              颜色值 <span className="text-muted-foreground">(可选覆盖)</span>
-            </Label>
+            <Label htmlFor="customHexColor">颜色调整 (可选)</Label>
             <div className="flex gap-2">
               <Input
                 id="customHexColor"
                 type="color"
                 value={formData.customHexColor || color.hexColor}
                 onChange={(e) => setFormData({ ...formData, customHexColor: e.target.value })}
-                className="w-20 h-10 p-1 cursor-pointer"
+                className="w-16 h-10 p-1 cursor-pointer"
               />
               <Input
                 value={formData.customHexColor}
                 onChange={(e) => setFormData({ ...formData, customHexColor: e.target.value })}
                 placeholder={color.hexColor}
-                pattern="^#[0-9A-Fa-f]{6}$"
+                className="flex-1 font-mono text-sm"
               />
             </div>
           </div>
 
-          {/* Notes */}
+          {/* Notes - optional */}
           <div className="space-y-2">
-            <Label htmlFor="notes">备注</Label>
+            <Label htmlFor="notes" className="flex items-center justify-between">
+              <span>备注 (可选)</span>
+              <span className="text-xs text-muted-foreground">
+                {formData.notes.length}/50
+              </span>
+            </Label>
             <Textarea
               id="notes"
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="添加颜色相关备注..."
-              rows={3}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value.slice(0, 50) })}
+              placeholder="添加备注..."
+              rows={2}
+              maxLength={50}
+              className="text-sm"
             />
           </div>
 
