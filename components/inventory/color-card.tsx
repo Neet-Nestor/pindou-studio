@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Minus, Plus, Edit2 } from 'lucide-react';
+import { Minus, Plus, Edit2, EyeOff } from 'lucide-react';
 import EditColorDialog from './edit-color-dialog';
 
 interface ColorCardProps {
@@ -36,9 +36,10 @@ interface ColorCardProps {
     } | null;
   };
   onQuantityUpdate: (itemId: string, newQuantity: number) => void;
+  onHideColor: (colorCode: string) => void;
 }
 
-export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
+export default function ColorCard({ item, onQuantityUpdate, onHideColor }: ColorCardProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [showInput, setShowInput] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -110,15 +111,26 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
             <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-yellow-500 border border-white shadow-sm" />
           )}
 
-          {/* Edit button on hover */}
-          <Button
-            size="icon"
-            variant="secondary"
-            className="absolute top-1 left-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-            onClick={() => setShowEditDialog(true)}
-          >
-            <Edit2 className="h-3 w-3" />
-          </Button>
+          {/* Action buttons on hover */}
+          <div className="absolute top-1 left-1 right-1 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-6 w-6 shadow-sm"
+              onClick={() => setShowEditDialog(true)}
+            >
+              <Edit2 className="h-3 w-3" />
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-6 w-6 shadow-sm"
+              onClick={() => onHideColor(displayCode)}
+              title="Hide this color"
+            >
+              <EyeOff className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
 
         {/* Minimal info bar */}

@@ -7,6 +7,7 @@ import InventoryGrid from '@/components/inventory/inventory-grid';
 import EmptyInventory from '@/components/inventory/empty-inventory';
 import { Button } from '@/components/ui/button';
 import { signOut } from '@/lib/auth';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default async function InventoryPage() {
   const session = await auth();
@@ -64,14 +65,6 @@ export default async function InventoryPage() {
     customization: item.customizationRaw?.id ? item.customizationRaw : null,
   }));
 
-  // Debug: check if customizations are loaded
-  console.log('Inventory items with customizations:',
-    inventoryWithCustomizations.filter(i => i.customization?.id).map(i => ({
-      code: i.color?.code,
-      customization: i.customization
-    }))
-  );
-
   // Fetch hidden families (where colorCode is null, meaning entire family is hidden)
   const hiddenFamiliesData = await db
     .select({
@@ -90,12 +83,31 @@ export default async function InventoryPage() {
     .map((row) => row.family)
     .filter((f): f is string => f !== null);
 
+  // Fetch hidden individual colors (where colorCode is set, family is null)
+  const hiddenColorsData = await db
+    .select({
+      colorCode: userHiddenColors.colorCode,
+    })
+    .from(userHiddenColors)
+    .where(
+      and(
+        eq(userHiddenColors.userId, session.user.id),
+        isNotNull(userHiddenColors.colorCode),
+        isNull(userHiddenColors.family)
+      )
+    );
+
+  const hiddenColors = hiddenColorsData
+    .map((row) => row.colorCode)
+    .filter((c): c is string => c !== null);
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto flex h-12 items-center justify-between px-4">
           <h1 className="text-lg font-bold">拼豆Studio</h1>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <form
               action={async () => {
                 'use server';
@@ -126,7 +138,11 @@ export default async function InventoryPage() {
           {inventoryWithCustomizations.length === 0 ? (
             <EmptyInventory />
           ) : (
-            <InventoryGrid inventory={inventoryWithCustomizations} initialHiddenFamilies={hiddenFamilies} />
+            <InventoryGrid
+              inventory={inventoryWithCustomizations}
+              initialHiddenFamilies={hiddenFamilies}
+              initialHiddenColors={hiddenColors}
+            />
           )}
         </div>
       </main>

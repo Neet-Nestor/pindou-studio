@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Search, Download, Upload, Plus } from 'lucide-react';
+import { Search, Download, Upload, Plus, Eye } from 'lucide-react';
 import AddCustomColorDialog from './add-custom-color-dialog';
 import FamilyGroup from './family-group';
 import { colorFamilies } from '@/lib/db/default-colors';
@@ -42,6 +42,7 @@ interface InventoryItem {
 interface InventoryGridProps {
   inventory: InventoryItem[];
   initialHiddenFamilies?: string[];
+  initialHiddenColors?: string[];
 }
 
 // Helper function to extract family from color code
@@ -54,6 +55,7 @@ function extractFamily(code: string): string {
 export default function InventoryGrid({
   inventory: initialInventory,
   initialHiddenFamilies = [],
+  initialHiddenColors = [],
 }: InventoryGridProps) {
   const [inventory, setInventory] = useState(initialInventory);
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,6 +63,7 @@ export default function InventoryGrid({
   const [sortBy, setSortBy] = useState<'code' | 'name' | 'quantity'>('code');
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
   const [hiddenFamilies, setHiddenFamilies] = useState<Set<string>>(new Set(initialHiddenFamilies));
+  const [hiddenColors, setHiddenColors] = useState<Set<string>>(new Set(initialHiddenColors));
 
   // Sync inventory state when prop changes (after router.refresh())
   useEffect(() => {
@@ -71,6 +74,10 @@ export default function InventoryGrid({
   const groupedInventory = useMemo(() => {
     const filtered = inventory.filter((item) => {
       if (!item.color) return false;
+
+      // Filter out hidden colors
+      const colorCode = item.customization?.pieceId || item.color.code;
+      if (hiddenColors.has(colorCode)) return false;
 
       const matchesSearch =
         item.color.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -121,7 +128,7 @@ export default function InventoryGrid({
       items: grouped,
       totalCount: filtered.length,
     };
-  }, [inventory, searchQuery, stockFilter, sortBy]);
+  }, [inventory, searchQuery, stockFilter, sortBy, hiddenColors]);
 
   const handleQuantityUpdate = (itemId: string, newQuantity: number) => {
     setInventory((prev) =>
@@ -140,7 +147,6 @@ export default function InventoryGrid({
     }
     setHiddenFamilies(newHiddenFamilies);
 
-    // TODO: Save to database via API
     try {
       await fetch('/api/inventory/toggle-family', {
         method: 'POST',
@@ -154,6 +160,48 @@ export default function InventoryGrid({
       });
     } catch (error) {
       console.error('Failed to toggle family visibility:', error);
+    }
+  };
+
+  const handleHideColor = async (colorCode: string) => {
+    const newHiddenColors = new Set(hiddenColors);
+    newHiddenColors.add(colorCode);
+    setHiddenColors(newHiddenColors);
+
+    try {
+      await fetch('/api/inventory/toggle-color', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          colorCode,
+          hidden: true,
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to hide color:', error);
+    }
+  };
+
+  const handleUnhideColor = async (colorCode: string) => {
+    const newHiddenColors = new Set(hiddenColors);
+    newHiddenColors.delete(colorCode);
+    setHiddenColors(newHiddenColors);
+
+    try {
+      await fetch('/api/inventory/toggle-color', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          colorCode,
+          hidden: false,
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to unhide color:', error);
     }
   };
 
@@ -233,26 +281,33 @@ export default function InventoryGrid({
       </div>
 
       {/* Stock Insights - Compact */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <div className="rounded-md p-2.5 bg-gradient-to-br from-card to-muted/20 border shadow-sm">
-          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">总计</div>
-          <div className="text-xl font-bold mt-0.5">{groupedInventory.totalCount}</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Total */}
+        <div className="rounded-lg p-4 bg-card border hover:shadow-md transition-all">
+          <div className="text-xs text-muted-foreground font-medium mb-1">总计</div>
+          <div className="text-3xl font-bold tracking-tight">{groupedInventory.totalCount}</div>
         </div>
-        <div className="rounded-md p-2.5 bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-200 dark:border-green-900 shadow-sm">
-          <div className="text-[10px] text-green-700 dark:text-green-400 font-medium uppercase tracking-wide">有库存</div>
-          <div className="text-xl font-bold text-green-600 dark:text-green-400 mt-0.5">
+
+        {/* In Stock */}
+        <div className="rounded-lg p-4 bg-card border border-green-200 dark:border-green-900/40 hover:shadow-md hover:border-green-300 dark:hover:border-green-800/60 transition-all">
+          <div className="text-xs font-medium mb-1 text-green-700 dark:text-green-300">有库存</div>
+          <div className="text-3xl font-bold tracking-tight text-green-700 dark:text-green-300">
             {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity > 10).length}
           </div>
         </div>
-        <div className="rounded-md p-2.5 bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-200 dark:border-yellow-900 shadow-sm">
-          <div className="text-[10px] text-yellow-700 dark:text-yellow-400 font-medium uppercase tracking-wide">低库存</div>
-          <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400 mt-0.5">
+
+        {/* Low Stock */}
+        <div className="rounded-lg p-4 bg-card border border-orange-200 dark:border-orange-900/40 hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800/60 transition-all">
+          <div className="text-xs font-medium mb-1 text-orange-700 dark:text-orange-300">低库存</div>
+          <div className="text-3xl font-bold tracking-tight text-orange-700 dark:text-orange-300">
             {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity > 0 && i.quantity <= 10).length}
           </div>
         </div>
-        <div className="rounded-md p-2.5 bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-200 dark:border-red-900 shadow-sm">
-          <div className="text-[10px] text-red-700 dark:text-red-400 font-medium uppercase tracking-wide">缺货</div>
-          <div className="text-xl font-bold text-red-600 dark:text-red-400 mt-0.5">
+
+        {/* Out of Stock */}
+        <div className="rounded-lg p-4 bg-card border border-red-200 dark:border-red-900/40 hover:shadow-md hover:border-red-300 dark:hover:border-red-800/60 transition-all">
+          <div className="text-xs font-medium mb-1 text-red-700 dark:text-red-300">缺货</div>
+          <div className="text-3xl font-bold tracking-tight text-red-700 dark:text-red-300">
             {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity === 0).length}
           </div>
         </div>
@@ -268,6 +323,7 @@ export default function InventoryGrid({
               family={family}
               items={items}
               onQuantityUpdate={handleQuantityUpdate}
+              onHideColor={handleHideColor}
               isHidden={hiddenFamilies.has(family)}
               onToggleHidden={handleToggleHidden}
             />
@@ -278,6 +334,59 @@ export default function InventoryGrid({
       {groupedInventory.totalCount === 0 && (
         <div className="text-center py-8 text-muted-foreground text-sm">
           搜索 &quot;{searchQuery}&quot; - 没有找到结果
+        </div>
+      )}
+
+      {/* Hidden items section */}
+      {(hiddenFamilies.size > 0 || hiddenColors.size > 0) && (
+        <div className="border-t pt-6 mt-8 space-y-4">
+          <h3 className="text-lg font-semibold px-2">已隐藏的拼豆片</h3>
+
+          {/* Hidden families */}
+          {hiddenFamilies.size > 0 && (
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground px-2">
+                系列 ({hiddenFamilies.size})
+              </div>
+              <div className="flex flex-wrap gap-2 px-2">
+                {Array.from(hiddenFamilies).map((family) => (
+                  <Button
+                    key={family}
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleToggleHidden(family)}
+                    className="h-9 gap-2"
+                  >
+                    <span className="font-semibold">{family}</span>
+                    <Eye className="h-3.5 w-3.5" />
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Hidden individual colors */}
+          {hiddenColors.size > 0 && (
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground px-2">
+                单个颜色 ({hiddenColors.size})
+              </div>
+              <div className="flex flex-wrap gap-2 px-2">
+                {Array.from(hiddenColors).map((colorCode) => (
+                  <Button
+                    key={colorCode}
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleUnhideColor(colorCode)}
+                    className="h-9 gap-2"
+                  >
+                    <span className="font-mono text-xs">{colorCode}</span>
+                    <Eye className="h-3.5 w-3.5" />
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

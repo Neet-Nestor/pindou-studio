@@ -39,6 +39,7 @@ interface FamilyGroupProps {
   family: string;
   items: InventoryItem[];
   onQuantityUpdate: (itemId: string, newQuantity: number) => void;
+  onHideColor: (colorCode: string) => void;
   isHidden: boolean;
   onToggleHidden: (family: string) => void;
 }
@@ -47,6 +48,7 @@ export default function FamilyGroup({
   family,
   items,
   onQuantityUpdate,
+  onHideColor,
   isHidden,
   onToggleHidden,
 }: FamilyGroupProps) {
@@ -54,6 +56,11 @@ export default function FamilyGroup({
 
   const inStockCount = items.filter((item) => item.quantity > 0).length;
   const totalCount = items.length;
+
+  // Don't render anything if family is hidden
+  if (isHidden) {
+    return null;
+  }
 
   return (
     <div className="space-y-2">
@@ -96,36 +103,22 @@ export default function FamilyGroup({
           }}
           className="h-7 gap-1.5 px-2 opacity-60 hover:opacity-100 transition-opacity"
         >
-          {isHidden ? (
-            <>
-              <EyeOff className="h-3 w-3" />
-              <span className="text-[10px]">已隐藏</span>
-            </>
-          ) : (
-            <>
-              <Eye className="h-3 w-3" />
-              <span className="text-[10px]">隐藏</span>
-            </>
-          )}
+          <EyeOff className="h-3 w-3" />
+          <span className="text-[10px]">隐藏</span>
         </Button>
       </div>
 
       {/* Family Items - Responsive grid for square cards */}
-      {isExpanded && !isHidden && (
+      {isExpanded && (
         <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
           {items.map((item) => (
             <ColorCard
               key={item.id}
               item={item}
               onQuantityUpdate={onQuantityUpdate}
+              onHideColor={onHideColor}
             />
           ))}
-        </div>
-      )}
-
-      {isExpanded && isHidden && (
-        <div className="text-center py-6 text-muted-foreground text-xs">
-          此系列已隐藏
         </div>
       )}
     </div>
