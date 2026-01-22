@@ -4,9 +4,10 @@ import { useState, useMemo, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Search, Download, Upload, Plus, Eye } from 'lucide-react';
+import { Search, Download, Upload, Plus, Eye, List, LayoutGrid } from 'lucide-react';
 import AddCustomColorDialog from './add-custom-color-dialog';
 import FamilyGroup from './family-group';
+import ColorCard from './color-card';
 import { colorFamilies } from '@/lib/db/default-colors';
 
 interface InventoryItem {
@@ -64,13 +65,14 @@ export default function InventoryGrid({
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
   const [hiddenFamilies, setHiddenFamilies] = useState<Set<string>>(new Set(initialHiddenFamilies));
   const [hiddenColors, setHiddenColors] = useState<Set<string>>(new Set(initialHiddenColors));
+  const [groupByFamily, setGroupByFamily] = useState(false);
 
   // Sync inventory state when prop changes (after router.refresh())
   useEffect(() => {
     setInventory(initialInventory);
   }, [initialInventory]);
 
-  // Filter, sort, and group inventory by family
+  // Filter, sort, and optionally group inventory by family
   const groupedInventory = useMemo(() => {
     const filtered = inventory.filter((item) => {
       if (!item.color) return false;
@@ -94,7 +96,7 @@ export default function InventoryGrid({
       return matchesSearch && matchesStock;
     });
 
-    // Sort within each family
+    // Sort items
     filtered.sort((a, b) => {
       if (sortBy === 'quantity') {
         return (b.quantity || 0) - (a.quantity || 0);
@@ -106,6 +108,15 @@ export default function InventoryGrid({
         return (a.color?.code || '').localeCompare(b.color?.code || '');
       }
     });
+
+    if (!groupByFamily) {
+      // Return ungrouped view - all items in a single "all" group
+      return {
+        families: ['all'],
+        items: new Map([['all', filtered]]),
+        totalCount: filtered.length,
+      };
+    }
 
     // Group by family
     const grouped = new Map<string, typeof filtered>();
@@ -128,7 +139,7 @@ export default function InventoryGrid({
       items: grouped,
       totalCount: filtered.length,
     };
-  }, [inventory, searchQuery, stockFilter, sortBy, hiddenColors]);
+  }, [inventory, searchQuery, stockFilter, sortBy, hiddenColors, groupByFamily]);
 
   const handleQuantityUpdate = (itemId: string, newQuantity: number) => {
     setInventory((prev) =>
@@ -261,6 +272,16 @@ export default function InventoryGrid({
           </SelectContent>
         </Select>
 
+        <Button
+          variant={groupByFamily ? "default" : "outline"}
+          size="icon"
+          onClick={() => setGroupByFamily(!groupByFamily)}
+          title={groupByFamily ? "取消分组" : "按系列分组"}
+          className="h-9 w-9"
+        >
+          {groupByFamily ? <LayoutGrid className="h-3.5 w-3.5" /> : <List className="h-3.5 w-3.5" />}
+        </Button>
+
         <div className="flex gap-1.5">
           <Button variant="outline" size="icon" onClick={handleExport} title="导出" className="h-9 w-9">
             <Download className="h-3.5 w-3.5" />
@@ -313,23 +334,38 @@ export default function InventoryGrid({
         </div>
       </div>
 
-      {/* Inventory by family groups - Compact spacing */}
-      <div className="space-y-4">
-        {groupedInventory.families.map((family) => {
-          const items = groupedInventory.items.get(family) || [];
-          return (
-            <FamilyGroup
-              key={family}
-              family={family}
-              items={items}
+      {/* Inventory display - grouped or ungrouped */}
+      {!groupByFamily ? (
+        // Ungrouped view - flat grid
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+          {groupedInventory.items.get('all')?.map((item) => (
+            <ColorCard
+              key={item.id}
+              item={item}
               onQuantityUpdate={handleQuantityUpdate}
               onHideColor={handleHideColor}
-              isHidden={hiddenFamilies.has(family)}
-              onToggleHidden={handleToggleHidden}
             />
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        // Grouped view - by family
+        <div className="space-y-4">
+          {groupedInventory.families.map((family) => {
+            const items = groupedInventory.items.get(family) || [];
+            return (
+              <FamilyGroup
+                key={family}
+                family={family}
+                items={items}
+                onQuantityUpdate={handleQuantityUpdate}
+                onHideColor={handleHideColor}
+                isHidden={hiddenFamilies.has(family)}
+                onToggleHidden={handleToggleHidden}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {groupedInventory.totalCount === 0 && (
         <div className="text-center py-8 text-muted-foreground text-sm">

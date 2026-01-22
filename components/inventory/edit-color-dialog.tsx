@@ -46,13 +46,7 @@ export default function EditColorDialog({
 
   useEffect(() => {
     if (open) {
-      console.log('Opening edit dialog with customization:', customization);
       setFormData({
-        pieceId: customization?.pieceId || '',
-        customHexColor: customization?.customHexColor || '',
-        notes: customization?.notes || '',
-      });
-      console.log('Form data initialized:', {
         pieceId: customization?.pieceId || '',
         customHexColor: customization?.customHexColor || '',
         notes: customization?.notes || '',
@@ -71,8 +65,6 @@ export default function EditColorDialog({
       notes: formData.notes || undefined,
     };
 
-    console.log('Submitting customization:', payload);
-
     try {
       const response = await fetch('/api/colors/customize', {
         method: 'POST',
@@ -84,13 +76,8 @@ export default function EditColorDialog({
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('API error:', errorData);
         throw new Error(errorData.message || 'Failed to customize color');
       }
-
-      const result = await response.json();
-      console.log('Customization saved:', result);
-      console.log('Saved customization details:', JSON.stringify(result.customization, null, 2));
 
       onOpenChange(false);
       router.refresh();

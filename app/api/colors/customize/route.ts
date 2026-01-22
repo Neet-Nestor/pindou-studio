@@ -29,8 +29,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = customizeColorSchema.parse(body);
 
-    console.log('Customize API - userId:', session.user.id, 'colorId:', validatedData.colorId);
-
     // Check if customization already exists
     const [existing] = await db
       .select()
