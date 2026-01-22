@@ -7,13 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { commonFamilies, uncommonFamilies } from '@/lib/db/default-colors';
 
-interface OnboardingFormProps {
-  userId: string;
-}
-
 type SelectionMode = 'common' | 'all' | 'custom';
 
-export default function OnboardingForm({ userId }: OnboardingFormProps) {
+export default function OnboardingForm() {
   const router = useRouter();
   const [mode, setMode] = useState<SelectionMode>('common');
   const [selectedFamilies, setSelectedFamilies] = useState<Set<string>>(

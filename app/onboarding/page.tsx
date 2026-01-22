@@ -24,5 +24,5 @@ export default async function OnboardingPage() {
     redirect('/inventory');
   }
 
-  return <OnboardingForm userId={session.user.id} />;
+  return <OnboardingForm />;
 }

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     try {
       const body = await request.json();
       families = body.families;
-    } catch (e) {
+    } catch {
       // Empty body, use default families
       families = undefined;
     }

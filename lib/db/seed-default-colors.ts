@@ -1,7 +1,7 @@
 import { db } from './index';
-import { colors, userInventory, userHiddenColors } from './schema';
-import { defaultColors, getColorsByFamilies, commonFamilies, colorFamilies } from './default-colors';
-import { eq, inArray } from 'drizzle-orm';
+import { colors, userHiddenColors } from './schema';
+import { defaultColors, commonFamilies, colorFamilies } from './default-colors';
+import { eq } from 'drizzle-orm';
 
 // Seed the database with all default colors (291 total)
 export async function seedDefaultColors() {
