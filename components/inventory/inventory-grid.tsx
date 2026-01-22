@@ -61,7 +61,7 @@ export default function InventoryGrid({
   const [inventory, setInventory] = useState(initialInventory);
   const [searchQuery, setSearchQuery] = useState('');
   const [stockFilter, setStockFilter] = useState<'all' | 'in-stock' | 'low-stock' | 'out-of-stock'>('all');
-  const [sortBy, setSortBy] = useState<'code' | 'name' | 'quantity'>('code');
+  const [sortBy, setSortBy] = useState<'code' | 'quantity'>('quantity');
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
   const [hiddenFamilies, setHiddenFamilies] = useState<Set<string>>(new Set(initialHiddenFamilies));
   const [hiddenColors, setHiddenColors] = useState<Set<string>>(new Set(initialHiddenColors));
@@ -99,11 +99,10 @@ export default function InventoryGrid({
     // Sort items
     filtered.sort((a, b) => {
       if (sortBy === 'quantity') {
-        return (b.quantity || 0) - (a.quantity || 0);
-      } else if (sortBy === 'name') {
-        const nameA = a.color?.nameZh || a.color?.name || '';
-        const nameB = b.color?.nameZh || b.color?.name || '';
-        return nameA.localeCompare(nameB);
+        const qtyDiff = (b.quantity || 0) - (a.quantity || 0);
+        if (qtyDiff !== 0) return qtyDiff;
+        // Secondary sort by code when quantities are equal
+        return (a.color?.code || '').localeCompare(b.color?.code || '');
       } else {
         return (a.color?.code || '').localeCompare(b.color?.code || '');
       }
@@ -129,11 +128,20 @@ export default function InventoryGrid({
       grouped.get(family)?.push(item);
     });
 
-    // Sort families according to colorFamilies order
-    const sortedFamilies = colorFamilies.filter((f) => grouped.has(f));
-    const sortedFamiliesSet = new Set<string>(sortedFamilies);
-    const otherFamilies = Array.from(grouped.keys()).filter((f: string) => !sortedFamiliesSet.has(f));
-    const allFamilies = [...sortedFamilies, ...otherFamilies];
+    // Sort families by total quantity
+    const familiesWithTotals = Array.from(grouped.entries()).map(([family, items]) => ({
+      family,
+      totalQuantity: items.reduce((sum, item) => sum + (item.quantity || 0), 0),
+    }));
+
+    familiesWithTotals.sort((a, b) => {
+      const qtyDiff = b.totalQuantity - a.totalQuantity;
+      if (qtyDiff !== 0) return qtyDiff;
+      // Secondary sort by family name when totals are equal
+      return a.family.localeCompare(b.family);
+    });
+
+    const allFamilies = familiesWithTotals.map(({ family }) => family);
 
     return {
       families: allFamilies,
@@ -262,14 +270,13 @@ export default function InventoryGrid({
           </SelectContent>
         </Select>
 
-        <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'code' | 'name' | 'quantity')}>
+        <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'code' | 'quantity')}>
           <SelectTrigger className="w-full md:w-[120px] h-9 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="code" className="text-xs">按代码</SelectItem>
-            <SelectItem value="name" className="text-xs">按名称</SelectItem>
             <SelectItem value="quantity" className="text-xs">按数量</SelectItem>
+            <SelectItem value="code" className="text-xs">按代码</SelectItem>
           </SelectContent>
         </Select>
 
