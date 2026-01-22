@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Minus, Plus, Edit2, EyeOff } from 'lucide-react';
@@ -40,10 +40,26 @@ interface ColorCardProps {
 }
 
 export default function ColorCard({ item, onQuantityUpdate, onHideColor }: ColorCardProps) {
-  const [isUpdating, setIsUpdating] = useState(false);
   const [showInput, setShowInput] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [inputValue, setInputValue] = useState(item.quantity.toString());
+  const [localQuantity, setLocalQuantity] = useState(item.quantity);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingQuantityRef = useRef<number | null>(null);
+
+  // Sync local quantity when item changes from parent
+  useEffect(() => {
+    setLocalQuantity(item.quantity);
+  }, [item.quantity]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   if (!item.color) return null;
 
@@ -52,34 +68,52 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
   const displayHexColor = item.customization?.customHexColor || item.color.hexColor;
   const displayPieceId = item.customization?.pieceId;
 
-  const updateQuantity = async (newQuantity: number) => {
+  const updateQuantity = (newQuantity: number) => {
     if (newQuantity < 0) return;
 
-    setIsUpdating(true);
-    try {
-      const response = await fetch('/api/inventory/update', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          inventoryId: item.id,
-          quantity: newQuantity,
-        }),
-      });
+    // Update UI immediately (optimistic)
+    setLocalQuantity(newQuantity);
+    onQuantityUpdate(item.id, newQuantity);
 
-      if (response.ok) {
-        onQuantityUpdate(item.id, newQuantity);
-      }
-    } catch (error) {
-      console.error('Failed to update quantity:', error);
-    } finally {
-      setIsUpdating(false);
+    // Store the pending quantity
+    pendingQuantityRef.current = newQuantity;
+
+    // Clear existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
+
+    // Debounce the API call (500ms)
+    debounceTimerRef.current = setTimeout(async () => {
+      const quantityToSave = pendingQuantityRef.current;
+      if (quantityToSave === null) return;
+
+      try {
+        const response = await fetch('/api/inventory/update', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            inventoryId: item.id,
+            quantity: quantityToSave,
+          }),
+        });
+
+        if (!response.ok) {
+          // Revert on failure - refresh from server
+          console.error('Failed to update quantity');
+        }
+      } catch (error) {
+        console.error('Failed to update quantity:', error);
+      } finally {
+        pendingQuantityRef.current = null;
+      }
+    }, 500);
   };
 
   const handleQuickAdjust = (amount: number) => {
-    updateQuantity(item.quantity + amount);
+    updateQuantity(localQuantity + amount);
   };
 
   const handleInputSubmit = () => {
@@ -90,8 +124,8 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
     }
   };
 
-  const isLowStock = item.quantity > 0 && item.quantity < 10;
-  const isOutOfStock = item.quantity === 0;
+  const isLowStock = localQuantity > 0 && localQuantity < 10;
+  const isOutOfStock = localQuantity === 0;
 
   return (
     <>
@@ -162,7 +196,6 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
                 <Button
                   size="sm"
                   onClick={handleInputSubmit}
-                  disabled={isUpdating}
                   className="h-7 w-7 p-0"
                 >
                   <Plus className="h-3 w-3 rotate-45" />
@@ -174,7 +207,7 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
                   size="sm"
                   variant="ghost"
                   onClick={() => handleQuickAdjust(-1)}
-                  disabled={isUpdating || item.quantity < 1}
+                  disabled={localQuantity < 1}
                   className="h-7 w-7 p-0"
                 >
                   <Minus className="h-3 w-3" />
@@ -183,17 +216,16 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
                   className="font-bold text-lg cursor-pointer hover:text-primary transition-colors min-w-[2.5rem] text-center"
                   onClick={() => {
                     setShowInput(true);
-                    setInputValue(item.quantity.toString());
+                    setInputValue(localQuantity.toString());
                   }}
                   title="点击编辑"
                 >
-                  {item.quantity}
+                  {localQuantity}
                 </div>
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => handleQuickAdjust(1)}
-                  disabled={isUpdating}
                   className="h-7 w-7 p-0"
                 >
                   <Plus className="h-3 w-3" />
