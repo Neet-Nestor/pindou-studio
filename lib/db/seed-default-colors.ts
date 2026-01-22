@@ -1,7 +1,7 @@
 import { db } from './index';
 import { colors, colorSets, userInventory } from './schema';
 import { defaultColors } from './default-colors';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 // Seed the database with 221 default colors
 export async function seedDefaultColors() {
