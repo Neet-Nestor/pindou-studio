@@ -41,20 +41,37 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
   const [localQuantity, setLocalQuantity] = useState(item.quantity);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pendingQuantityRef = useRef<number | null>(null);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Sync local quantity when item changes from parent
   useEffect(() => {
     setLocalQuantity(item.quantity);
   }, [item.quantity]);
 
-  // Cleanup timer on unmount
+  // Cleanup timers on unmount
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+      }
     };
   }, []);
+
+  // Long press handlers for mobile edit
+  const handleTouchStart = () => {
+    longPressTimerRef.current = setTimeout(() => {
+      setShowEditDialog(true);
+    }, 500); // 500ms long press
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+  };
 
   if (!item.color) return null;
 
@@ -84,6 +101,8 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
       if (quantityToSave === null) return;
 
       try {
+        if (!item.color) return;
+
         const response = await fetch('/api/inventory/update', {
           method: 'PATCH',
           headers: {
@@ -126,21 +145,24 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
   return (
     <>
       <div className="group relative flex flex-col rounded-lg overflow-hidden border bg-card transition-all hover:shadow-lg hover:border-primary/50">
-        {/* Large color swatch - PROMINENT */}
+        {/* Large color swatch - PROMINENT, long press on mobile to edit */}
         <div
-          className="w-full aspect-square relative"
+          className="w-full aspect-square relative md:pointer-events-none"
           style={{ backgroundColor: displayHexColor }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
         >
-          {/* Status indicator - top right corner */}
+          {/* Status indicator - top right corner, larger on mobile */}
           {isOutOfStock && (
-            <div className="absolute top-1 right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-white shadow-md" />
+            <div className="absolute top-0.5 right-0.5 md:top-1 md:right-1 w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500 border-2 border-white shadow-md" />
           )}
           {isLowStock && !isOutOfStock && (
-            <div className="absolute top-1 right-1 w-3 h-3 rounded-full bg-yellow-500 border-2 border-white shadow-md" />
+            <div className="absolute top-0.5 right-0.5 md:top-1 md:right-1 w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-yellow-500 border-2 border-white shadow-md" />
           )}
 
-          {/* Action buttons on hover */}
-          <div className="absolute top-1 left-1 right-1 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+          {/* Action buttons on hover - hidden on mobile */}
+          <div className="hidden md:flex absolute top-1 left-1 right-1 justify-between opacity-0 group-hover:opacity-100 transition-opacity">
             <Button
               size="icon"
               variant="secondary"
@@ -161,20 +183,20 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
           </div>
         </div>
 
-        {/* Minimal info bar */}
-        <div className="px-2 py-1.5 bg-card space-y-1 flex-shrink-0">
-          {/* Piece ID - large and clear */}
-          <div className="font-bold text-sm text-center truncate">
+        {/* Minimal info bar - more compact on mobile */}
+        <div className="px-1 py-1 md:px-2 md:py-1.5 bg-card space-y-0.5 md:space-y-1 flex-shrink-0">
+          {/* Piece ID - smaller on mobile */}
+          <div className="font-bold text-[10px] md:text-sm text-center truncate">
             {displayPieceId || displayCode}
           </div>
 
-          {/* Notes - visible but compact, always takes up space */}
-          <div className="text-[10px] text-muted-foreground text-center leading-tight truncate px-1 min-h-[14px]" title={item.customization?.notes || ''}>
+          {/* Notes - hidden on mobile to save space */}
+          <div className="hidden md:block text-[10px] text-muted-foreground text-center leading-tight truncate px-1 min-h-[14px]" title={item.customization?.notes || ''}>
             {item.customization?.notes || '\u00A0'}
           </div>
 
-          {/* Quantity controls - clean and simple */}
-          <div className="flex items-center justify-center gap-1">
+          {/* Quantity controls - larger touch targets on mobile */}
+          <div className="flex items-center justify-center gap-0.5 md:gap-1">
             {showInput ? (
               <>
                 <Input
@@ -184,15 +206,15 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleInputSubmit()}
                   onBlur={handleInputSubmit}
-                  className="h-7 text-xs text-center w-16"
+                  className="h-6 md:h-7 text-xs text-center w-12 md:w-16"
                   autoFocus
                 />
                 <Button
                   size="sm"
                   onClick={handleInputSubmit}
-                  className="h-7 w-7 p-0"
+                  className="h-6 w-6 md:h-7 md:w-7 p-0"
                 >
-                  <Plus className="h-3 w-3 rotate-45" />
+                  <Plus className="h-2.5 w-2.5 md:h-3 md:w-3 rotate-45" />
                 </Button>
               </>
             ) : (
@@ -202,12 +224,12 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
                   variant="ghost"
                   onClick={() => handleQuickAdjust(-1)}
                   disabled={localQuantity < 1}
-                  className="h-7 w-7 p-0"
+                  className="h-6 w-6 md:h-7 md:w-7 p-0 active:bg-accent"
                 >
-                  <Minus className="h-3 w-3" />
+                  <Minus className="h-2.5 w-2.5 md:h-3 md:w-3" />
                 </Button>
                 <div
-                  className="font-bold text-lg cursor-pointer hover:text-primary transition-colors min-w-[2.5rem] text-center"
+                  className="font-bold text-sm md:text-lg cursor-pointer hover:text-primary active:text-primary transition-colors min-w-[1.75rem] md:min-w-[2.5rem] text-center"
                   onClick={() => {
                     setShowInput(true);
                     setInputValue(localQuantity.toString());
@@ -220,9 +242,9 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
                   size="sm"
                   variant="ghost"
                   onClick={() => handleQuickAdjust(1)}
-                  className="h-7 w-7 p-0"
+                  className="h-6 w-6 md:h-7 md:w-7 p-0 active:bg-accent"
                 >
-                  <Plus className="h-3 w-3" />
+                  <Plus className="h-2.5 w-2.5 md:h-3 md:w-3" />
                 </Button>
               </>
             )}

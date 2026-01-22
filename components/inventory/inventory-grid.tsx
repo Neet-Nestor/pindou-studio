@@ -10,6 +10,7 @@ import { Search, Download, Upload, Plus, List, LayoutGrid, RotateCcw, Eye } from
 import AddCustomColorDialog from './add-custom-color-dialog';
 import FamilyGroup from './family-group';
 import ColorCard from './color-card';
+import { MobileTutorialBanner } from './mobile-tutorial';
 
 interface InventoryItem {
   id: string;
@@ -317,8 +318,11 @@ export default function InventoryGrid({
 
   return (
     <div className="space-y-4">
-      {/* Search and filters - Compact */}
-      <div className="flex flex-col gap-2 md:flex-row md:items-center">
+      {/* Mobile tutorial banner - shows on first visit */}
+      <MobileTutorialBanner />
+
+      {/* Search and filters - Compact, sticky on mobile */}
+      <div className="flex flex-col gap-2 md:flex-row md:items-center sticky top-12 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 z-10 py-2 -mx-4 px-4 md:static md:bg-transparent md:backdrop-blur-none md:p-0 md:m-0">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -346,22 +350,21 @@ export default function InventoryGrid({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="quantity" className="text-xs">按数量</SelectItem>
-            <SelectItem value="code" className="text-xs">按代码</SelectItem>
+            <SelectItem value="quantity" className="text-xs">按数量排序</SelectItem>
+            <SelectItem value="code" className="text-xs">按代码排序</SelectItem>
           </SelectContent>
         </Select>
 
-        <Button
-          variant={groupByFamily ? "default" : "outline"}
-          size="icon"
-          onClick={() => setGroupByFamily(!groupByFamily)}
-          title={groupByFamily ? "取消分组" : "按系列分组"}
-          className="h-9 w-9"
-        >
-          {groupByFamily ? <LayoutGrid className="h-3.5 w-3.5" /> : <List className="h-3.5 w-3.5" />}
-        </Button>
-
         <div className="flex gap-1.5">
+          <Button
+            variant={groupByFamily ? "default" : "outline"}
+            size="icon"
+            onClick={() => setGroupByFamily(!groupByFamily)}
+            title={groupByFamily ? "取消分组" : "按系列分组"}
+            className="h-9 w-9"
+          >
+            {groupByFamily ? <LayoutGrid className="h-3.5 w-3.5" /> : <List className="h-3.5 w-3.5" />}
+          </Button>
           <Button variant="outline" size="icon" onClick={handleExport} title="导出" className="h-9 w-9">
             <Download className="h-3.5 w-3.5" />
           </Button>
@@ -389,34 +392,34 @@ export default function InventoryGrid({
         </div>
       </div>
 
-      {/* Stock Insights - Compact */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Stock Insights - Compact, more compact on mobile */}
+      <div className="grid grid-cols-4 gap-2 md:gap-3 mt-2">
         {/* Total */}
-        <div className="rounded-lg p-4 bg-card border hover:shadow-md transition-all">
-          <div className="text-xs text-muted-foreground font-medium mb-1">总计</div>
-          <div className="text-3xl font-bold tracking-tight">{stats.total}</div>
+        <div className="rounded-lg p-2 md:p-4 bg-card border hover:shadow-md transition-all">
+          <div className="text-[10px] md:text-xs text-muted-foreground font-medium mb-0.5 md:mb-1">总计</div>
+          <div className="text-xl md:text-3xl font-bold tracking-tight">{stats.total}</div>
         </div>
 
         {/* In Stock */}
-        <div className="rounded-lg p-4 bg-card border border-green-200 dark:border-green-900/40 hover:shadow-md hover:border-green-300 dark:hover:border-green-800/60 transition-all">
-          <div className="text-xs font-medium mb-1 text-green-700 dark:text-green-300">有库存</div>
-          <div className="text-3xl font-bold tracking-tight text-green-700 dark:text-green-300">
+        <div className="rounded-lg p-2 md:p-4 bg-card border border-green-200 dark:border-green-900/40 hover:shadow-md hover:border-green-300 dark:hover:border-green-800/60 transition-all">
+          <div className="text-[10px] md:text-xs font-medium mb-0.5 md:mb-1 text-green-700 dark:text-green-300">有库存</div>
+          <div className="text-xl md:text-3xl font-bold tracking-tight text-green-700 dark:text-green-300">
             {stats.inStock}
           </div>
         </div>
 
         {/* Low Stock */}
-        <div className="rounded-lg p-4 bg-card border border-orange-200 dark:border-orange-900/40 hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800/60 transition-all">
-          <div className="text-xs font-medium mb-1 text-orange-700 dark:text-orange-300">低库存</div>
-          <div className="text-3xl font-bold tracking-tight text-orange-700 dark:text-orange-300">
+        <div className="rounded-lg p-2 md:p-4 bg-card border border-orange-200 dark:border-orange-900/40 hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800/60 transition-all">
+          <div className="text-[10px] md:text-xs font-medium mb-0.5 md:mb-1 text-orange-700 dark:text-orange-300">低库存</div>
+          <div className="text-xl md:text-3xl font-bold tracking-tight text-orange-700 dark:text-orange-300">
             {stats.lowStock}
           </div>
         </div>
 
         {/* Out of Stock */}
-        <div className="rounded-lg p-4 bg-card border border-red-200 dark:border-red-900/40 hover:shadow-md hover:border-red-300 dark:hover:border-red-800/60 transition-all">
-          <div className="text-xs font-medium mb-1 text-red-700 dark:text-red-300">缺货</div>
-          <div className="text-3xl font-bold tracking-tight text-red-700 dark:text-red-300">
+        <div className="rounded-lg p-2 md:p-4 bg-card border border-red-200 dark:border-red-900/40 hover:shadow-md hover:border-red-300 dark:hover:border-red-800/60 transition-all">
+          <div className="text-[10px] md:text-xs font-medium mb-0.5 md:mb-1 text-red-700 dark:text-red-300">缺货</div>
+          <div className="text-xl md:text-3xl font-bold tracking-tight text-red-700 dark:text-red-300">
             {stats.outOfStock}
           </div>
         </div>
@@ -424,8 +427,8 @@ export default function InventoryGrid({
 
       {/* Inventory display - grouped or ungrouped */}
       {!groupByFamily ? (
-        // Ungrouped view - flat grid
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+        // Ungrouped view - flat grid, denser on mobile
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-1.5 md:gap-2">
           {groupedInventory.items.get('all')?.map((item) => (
             <ColorCard
               key={item.id}
@@ -520,7 +523,7 @@ export default function InventoryGrid({
       />
 
       <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
-        <DialogContent>
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle>确认重置库存</DialogTitle>
             <DialogDescription className="space-y-2">
