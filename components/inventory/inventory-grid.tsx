@@ -8,7 +8,6 @@ import { Search, Download, Upload, Plus, Eye, List, LayoutGrid } from 'lucide-re
 import AddCustomColorDialog from './add-custom-color-dialog';
 import FamilyGroup from './family-group';
 import ColorCard from './color-card';
-import { colorFamilies } from '@/lib/db/default-colors';
 
 interface InventoryItem {
   id: string;
