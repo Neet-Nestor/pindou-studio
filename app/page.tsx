@@ -28,126 +28,143 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="flex-1 container mx-auto px-4 py-16 md:py-24">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center space-y-6 mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center space-y-8 mb-20">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 text-primary rounded-full text-sm font-medium mb-4">
               <Sparkles className="h-4 w-4" />
-              专业的拼豆库存管理工具
+              专为拼豆爱好者设计
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              轻松管理您的
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+              让拼豆库存管理
               <br />
-              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                拼豆收藏
+              <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+                变得简单高效
               </span>
             </h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              支持 Perler、Hama、Artkal、DoDo 等多品牌，279 种颜色任您选择。云端同步，随时随地管理您的拼豆库存。
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              告别繁琐的手工记录，用智能化的方式管理您的拼豆颜色库存。
+              <br className="hidden sm:block" />
+              实时同步，随时随地掌握您的创作资源。
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Button size="lg" className="text-lg px-8" asChild>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+              <Button size="lg" className="text-lg px-10 h-12 shadow-lg hover:shadow-xl transition-shadow" asChild>
                 <Link href="/signup">
                   免费开始使用
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8" asChild>
+              <Button size="lg" variant="outline" className="text-lg px-10 h-12" asChild>
                 <Link href="/login">
-                  已有账号登录
+                  已有账号？登录
                 </Link>
               </Button>
             </div>
           </div>
 
           {/* Features Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
-            <Card className="border-2 hover:border-primary/50 transition-colors">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+            <Card className="border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
               <CardHeader>
-                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Package className="h-6 w-6 text-primary" />
+                <div className="h-14 w-14 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Package className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle>多品牌支持</CardTitle>
-                <CardDescription>
-                  支持 Perler、Hama、Artkal、DoDo 等多个拼豆品牌，279 种预定义颜色
+                <CardTitle className="text-xl">丰富的色库</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  内置最常用的 221 种拼豆颜色，覆盖主流品牌色号，开箱即用
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-primary/50 transition-colors">
+            <Card className="border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
               <CardHeader>
-                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Search className="h-6 w-6 text-primary" />
+                <div className="h-14 w-14 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Search className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle>快速查找</CardTitle>
-                <CardDescription>
-                  通过颜色代码、名称或品牌快速搜索，支持多种排序和筛选方式
+                <CardTitle className="text-xl">智能搜索</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  通过颜色代码、片号或名称快速查找，支持多维度筛选排序
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-primary/50 transition-colors">
+            <Card className="border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
               <CardHeader>
-                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Cloud className="h-6 w-6 text-primary" />
+                <div className="h-14 w-14 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Cloud className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle>云端同步</CardTitle>
-                <CardDescription>
-                  数据自动云端保存，多设备同步，永不丢失您的库存记录
+                <CardTitle className="text-xl">云端同步</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  数据实时云端保存，多设备无缝同步，永不丢失
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-primary/50 transition-colors">
+            <Card className="border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
               <CardHeader>
-                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Palette className="h-6 w-6 text-primary" />
+                <div className="h-14 w-14 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Palette className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle>自定义颜色</CardTitle>
-                <CardDescription>
-                  添加您自己的自定义颜色，支持片号记录和个性化备注
+                <CardTitle className="text-xl">个性化管理</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  自定义片号、颜色名称和备注，打造专属于您的管理方式
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-primary/50 transition-colors">
+            <Card className="border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
               <CardHeader>
-                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Download className="h-6 w-6 text-primary" />
+                <div className="h-14 w-14 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Sparkles className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle>导出导入</CardTitle>
-                <CardDescription>
-                  支持 JSON 格式导出备份，随时导入恢复您的库存数据
+                <CardTitle className="text-xl">极速操作</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  一键增减库存数量，快捷按钮让记录变得轻松愉快
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-primary/50 transition-colors">
+            <Card className="border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
               <CardHeader>
-                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-primary" />
+                <div className="h-14 w-14 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Download className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle>快捷操作</CardTitle>
-                <CardDescription>
-                  一键增减库存数量，支持 +/-1、+/-5、+/-10 等快捷按钮
+                <CardTitle className="text-xl">数据备份</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  支持一键导出导入，数据完全掌握在您手中
                 </CardDescription>
               </CardHeader>
             </Card>
           </div>
 
           {/* CTA Section */}
-          <div className="mt-16 text-center">
-            <Card className="border-2 border-primary/20 bg-primary/5">
-              <CardContent className="pt-8 pb-8">
-                <h3 className="text-2xl font-bold mb-3">
-                  立即开始管理您的拼豆收藏
+          <div className="mt-24 text-center">
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-primary/3 to-background shadow-xl">
+              <CardContent className="py-16 px-8">
+                <h3 className="text-3xl md:text-4xl font-bold mb-5 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  开启您的智能库存管理之旅
                 </h3>
-                <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-                  免费注册账号，选择您拥有的颜色套装，开始轻松管理您的拼豆库存
+                <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+                  这是一款纯粹的实用工具，完全免费、无广告、注重隐私。
+                  <br className="hidden sm:block" />
+                  无需繁琐设置，注册即可开始使用，专注于创作本身。
                 </p>
-                <Button size="lg" className="text-lg px-8" asChild>
-                  <Link href="/signup">
-                    免费注册
-                  </Link>
-                </Button>
+                <div className="flex flex-col items-center justify-center gap-5">
+                  <Button size="lg" className="text-lg px-10 h-12 shadow-lg hover:shadow-xl transition-shadow" asChild>
+                    <Link href="/signup">
+                      立即免费注册
+                    </Link>
+                  </Button>
+                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-green-500">✓</span> 永久免费
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-green-500">✓</span> 无广告
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-green-500">✓</span> 隐私安全
+                    </span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
