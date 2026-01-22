@@ -66,6 +66,35 @@ export const userHiddenColors = pgTable('user_hidden_colors', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// Blueprints table - stores bead blueprints users want to build
+export const blueprints = pgTable('blueprints', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  description: text('description'),
+  imageUrl: text('image_url'), // Preview image
+  difficulty: text('difficulty'), // 'easy' | 'medium' | 'hard'
+  pieceRequirements: text('piece_requirements'), // JSON: {"A5": 50, "B12": 30}
+  tags: text('tags'), // Comma-separated for search
+  isPublic: boolean('is_public').default(false).notNull(), // For future community sharing
+  createdBy: uuid('created_by').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Build history table - records completed works with photos
+export const buildHistory = pgTable('build_history', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  blueprintId: uuid('blueprint_id').references(() => blueprints.id, { onDelete: 'set null' }), // Optional link to blueprint
+  title: text('title').notNull(),
+  description: text('description'),
+  imageUrls: text('image_urls'), // JSON array: ["url1", "url2", ...]
+  piecesUsed: text('pieces_used'), // JSON: {"A5": 50, "B12": 30}
+  completedAt: timestamp('completed_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   inventory: many(userInventory),
@@ -73,6 +102,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   customColors: many(colors),
   colorCustomizations: many(userColorCustomizations),
   hiddenColors: many(userHiddenColors),
+  blueprints: many(blueprints),
+  builds: many(buildHistory),
 }));
 
 export const colorsRelations = relations(colors, ({ one, many }) => ({
@@ -125,6 +156,25 @@ export const userHiddenColorsRelations = relations(userHiddenColors, ({ one }) =
   }),
 }));
 
+export const blueprintsRelations = relations(blueprints, ({ one, many }) => ({
+  creator: one(users, {
+    fields: [blueprints.createdBy],
+    references: [users.id],
+  }),
+  builds: many(buildHistory),
+}));
+
+export const buildHistoryRelations = relations(buildHistory, ({ one }) => ({
+  user: one(users, {
+    fields: [buildHistory.userId],
+    references: [users.id],
+  }),
+  blueprint: one(blueprints, {
+    fields: [buildHistory.blueprintId],
+    references: [blueprints.id],
+  }),
+}));
+
 // Types for TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -143,3 +193,9 @@ export type NewUserColorCustomization = typeof userColorCustomizations.$inferIns
 
 export type UserHiddenColor = typeof userHiddenColors.$inferSelect;
 export type NewUserHiddenColor = typeof userHiddenColors.$inferInsert;
+
+export type Blueprint = typeof blueprints.$inferSelect;
+export type NewBlueprint = typeof blueprints.$inferInsert;
+
+export type BuildHistory = typeof buildHistory.$inferSelect;
+export type NewBuildHistory = typeof buildHistory.$inferInsert;
