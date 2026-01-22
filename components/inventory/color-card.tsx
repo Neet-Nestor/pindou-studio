@@ -125,9 +125,7 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
 
   return (
     <>
-      <div className={`group relative flex flex-col rounded-lg overflow-hidden border bg-card transition-all hover:shadow-lg hover:border-primary/50 ${
-        isOutOfStock ? 'opacity-50' : ''
-      }`}>
+      <div className="group relative flex flex-col rounded-lg overflow-hidden border bg-card transition-all hover:shadow-lg hover:border-primary/50">
         {/* Large color swatch - PROMINENT */}
         <div
           className="w-full aspect-square relative"
@@ -135,10 +133,10 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
         >
           {/* Status indicator - top right corner */}
           {isOutOfStock && (
-            <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-white shadow-sm" />
+            <div className="absolute top-1 right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-white shadow-md" />
           )}
           {isLowStock && !isOutOfStock && (
-            <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-yellow-500 border border-white shadow-sm" />
+            <div className="absolute top-1 right-1 w-3 h-3 rounded-full bg-yellow-500 border-2 border-white shadow-md" />
           )}
 
           {/* Action buttons on hover */}
