@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Search, Download, Upload, Plus, Eye, List, LayoutGrid } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Search, Download, Upload, Plus, List, LayoutGrid, RotateCcw, Eye } from 'lucide-react';
 import AddCustomColorDialog from './add-custom-color-dialog';
 import FamilyGroup from './family-group';
 import ColorCard from './color-card';
@@ -21,11 +23,6 @@ interface InventoryItem {
     nameEn: string | null;
     nameZh: string | null;
     hexColor: string;
-  } | null;
-  colorSet: {
-    id: string;
-    name: string;
-    brand: string;
   } | null;
   customization: {
     id: string;
@@ -57,11 +54,14 @@ export default function InventoryGrid({
   initialHiddenFamilies = [],
   initialHiddenColors = [],
 }: InventoryGridProps) {
+  const router = useRouter();
   const [inventory, setInventory] = useState(initialInventory);
   const [searchQuery, setSearchQuery] = useState('');
   const [stockFilter, setStockFilter] = useState<'all' | 'in-stock' | 'low-stock' | 'out-of-stock'>('all');
   const [sortBy, setSortBy] = useState<'code' | 'quantity'>('quantity');
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [hiddenFamilies, setHiddenFamilies] = useState<Set<string>>(new Set(initialHiddenFamilies));
   const [hiddenColors, setHiddenColors] = useState<Set<string>>(new Set(initialHiddenColors));
   const [groupByFamily, setGroupByFamily] = useState(false);
@@ -71,6 +71,28 @@ export default function InventoryGrid({
     setInventory(initialInventory);
   }, [initialInventory]);
 
+  // Stats calculation - only exclude hidden items
+  const stats = useMemo(() => {
+    const visibleItems = inventory.filter((item) => {
+      if (!item.color) return false;
+
+      const colorCode = item.customization?.pieceId || item.color.code;
+      if (hiddenColors.has(colorCode)) return false;
+
+      const family = extractFamily(item.color.code);
+      if (hiddenFamilies.has(family)) return false;
+
+      return true;
+    });
+
+    return {
+      total: visibleItems.length,
+      inStock: visibleItems.filter(i => i.quantity > 10).length,
+      lowStock: visibleItems.filter(i => i.quantity > 0 && i.quantity <= 10).length,
+      outOfStock: visibleItems.filter(i => i.quantity === 0).length,
+    };
+  }, [inventory, hiddenColors, hiddenFamilies]);
+
   // Filter, sort, and optionally group inventory by family
   const groupedInventory = useMemo(() => {
     const filtered = inventory.filter((item) => {
@@ -79,6 +101,10 @@ export default function InventoryGrid({
       // Filter out hidden colors
       const colorCode = item.customization?.pieceId || item.color.code;
       if (hiddenColors.has(colorCode)) return false;
+
+      // Filter out colors from hidden families
+      const family = extractFamily(item.color.code);
+      if (hiddenFamilies.has(family)) return false;
 
       const matchesSearch =
         item.color.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -147,7 +173,7 @@ export default function InventoryGrid({
       items: grouped,
       totalCount: filtered.length,
     };
-  }, [inventory, searchQuery, stockFilter, sortBy, hiddenColors, groupByFamily]);
+  }, [inventory, searchQuery, stockFilter, sortBy, hiddenColors, hiddenFamilies, groupByFamily]);
 
   const handleQuantityUpdate = (itemId: string, newQuantity: number) => {
     setInventory((prev) =>
@@ -243,6 +269,28 @@ export default function InventoryGrid({
     }
   };
 
+  const handleReset = async () => {
+    setIsResetting(true);
+    try {
+      const response = await fetch('/api/inventory/reset', {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        router.push('/onboarding');
+        router.refresh();
+      } else {
+        console.error('Reset failed');
+        setIsResetting(false);
+        setShowResetDialog(false);
+      }
+    } catch (error) {
+      console.error('Reset failed:', error);
+      setIsResetting(false);
+      setShowResetDialog(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Search and filters - Compact */}
@@ -305,6 +353,15 @@ export default function InventoryGrid({
           >
             <Plus className="h-3.5 w-3.5" />
           </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            title="重新初始化"
+            onClick={() => setShowResetDialog(true)}
+            className="h-9 w-9 text-destructive hover:text-destructive"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </Button>
         </div>
       </div>
 
@@ -313,14 +370,14 @@ export default function InventoryGrid({
         {/* Total */}
         <div className="rounded-lg p-4 bg-card border hover:shadow-md transition-all">
           <div className="text-xs text-muted-foreground font-medium mb-1">总计</div>
-          <div className="text-3xl font-bold tracking-tight">{groupedInventory.totalCount}</div>
+          <div className="text-3xl font-bold tracking-tight">{stats.total}</div>
         </div>
 
         {/* In Stock */}
         <div className="rounded-lg p-4 bg-card border border-green-200 dark:border-green-900/40 hover:shadow-md hover:border-green-300 dark:hover:border-green-800/60 transition-all">
           <div className="text-xs font-medium mb-1 text-green-700 dark:text-green-300">有库存</div>
           <div className="text-3xl font-bold tracking-tight text-green-700 dark:text-green-300">
-            {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity > 10).length}
+            {stats.inStock}
           </div>
         </div>
 
@@ -328,7 +385,7 @@ export default function InventoryGrid({
         <div className="rounded-lg p-4 bg-card border border-orange-200 dark:border-orange-900/40 hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800/60 transition-all">
           <div className="text-xs font-medium mb-1 text-orange-700 dark:text-orange-300">低库存</div>
           <div className="text-3xl font-bold tracking-tight text-orange-700 dark:text-orange-300">
-            {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity > 0 && i.quantity <= 10).length}
+            {stats.lowStock}
           </div>
         </div>
 
@@ -336,7 +393,7 @@ export default function InventoryGrid({
         <div className="rounded-lg p-4 bg-card border border-red-200 dark:border-red-900/40 hover:shadow-md hover:border-red-300 dark:hover:border-red-800/60 transition-all">
           <div className="text-xs font-medium mb-1 text-red-700 dark:text-red-300">缺货</div>
           <div className="text-3xl font-bold tracking-tight text-red-700 dark:text-red-300">
-            {Array.from(groupedInventory.items.values()).flat().filter(i => i.quantity === 0).length}
+            {stats.outOfStock}
           </div>
         </div>
       </div>
@@ -437,6 +494,41 @@ export default function InventoryGrid({
         open={showAddColorDialog}
         onOpenChange={setShowAddColorDialog}
       />
+
+      <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>确认重置库存</DialogTitle>
+            <DialogDescription className="space-y-2">
+              <p className="text-destructive font-semibold">
+                警告：此操作将删除所有库存数据！
+              </p>
+              <p>
+                重置后，您将返回初始化页面重新选择颜色系列。所有数量记录、自定义颜色和备注都将永久删除。
+              </p>
+              <p className="font-medium">
+                此操作无法撤销，请确认是否继续？
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowResetDialog(false)}
+              disabled={isResetting}
+            >
+              取消
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleReset}
+              disabled={isResetting}
+            >
+              {isResetting ? '重置中...' : '确认重置'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

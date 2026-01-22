@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { seedDefaultColors, initializeUserInventory } from '@/lib/db/seed-default-colors';
+import { initializeUserInventory } from '@/lib/db/seed-default-colors';
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const session = await auth();
 
@@ -10,13 +10,22 @@ export async function POST() {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    // Ensure default colors are seeded
-    await seedDefaultColors();
+    let families;
+    try {
+      const body = await request.json();
+      families = body.families;
+    } catch (e) {
+      // Empty body, use default families
+      families = undefined;
+    }
 
-    // Initialize user inventory
-    await initializeUserInventory(session.user.id!);
+    // Initialize user inventory with selected families
+    await initializeUserInventory(session.user.id!, families);
 
-    return NextResponse.json({ success: true, message: 'Inventory initialized with 221 colors' });
+    return NextResponse.json({
+      success: true,
+      message: `Inventory initialized with ${families?.length || 'common'} families`
+    });
   } catch (error) {
     console.error('Initialize inventory error:', error);
     return NextResponse.json(

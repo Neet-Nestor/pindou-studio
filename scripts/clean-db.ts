@@ -5,7 +5,6 @@ import {
   userColorCustomizations,
   userHiddenColors,
   colors,
-  colorSets,
 } from '@/lib/db/schema';
 
 async function cleanDatabase() {
@@ -18,7 +17,6 @@ async function cleanDatabase() {
     { name: 'user color customizations', table: userColorCustomizations },
     { name: 'user hidden colors', table: userHiddenColors },
     { name: 'colors', table: colors },
-    { name: 'color sets', table: colorSets },
   ];
 
   for (const { name, table } of tables) {

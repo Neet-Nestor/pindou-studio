@@ -70,7 +70,7 @@ export default function Home() {
                 </div>
                 <CardTitle className="text-xl">丰富的色库</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  内置最常用的 221 种拼豆颜色，覆盖主流品牌色号，开箱即用
+                  多达 291 种颜色，可自选多种常用颜色搭配
                 </CardDescription>
               </CardHeader>
             </Card>

@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, boolean, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, timestamp, boolean, uuid, unique } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users table
@@ -12,24 +12,14 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-// Color sets table (e.g., Perler 63, Hama 48, Artkal)
-export const colorSets = pgTable('color_sets', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  name: text('name').notNull(),
-  brand: text('brand').notNull(),
-  description: text('description'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-});
-
-// Individual colors table
+// Individual colors table - each color code is globally unique
 export const colors = pgTable('colors', {
   id: uuid('id').primaryKey().defaultRandom(),
-  code: text('code').notNull(),
+  code: text('code').notNull().unique(), // Globally unique color code
   name: text('name').notNull(),
   nameEn: text('name_en'),
   nameZh: text('name_zh'),
   hexColor: text('hex_color').notNull(),
-  colorSetId: uuid('color_set_id').references(() => colorSets.id, { onDelete: 'cascade' }),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }), // For user-created custom colors
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
@@ -91,15 +81,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   hiddenColors: many(userHiddenColors),
 }));
 
-export const colorSetsRelations = relations(colorSets, ({ many }) => ({
-  colors: many(colors),
-}));
-
 export const colorsRelations = relations(colors, ({ one, many }) => ({
-  colorSet: one(colorSets, {
-    fields: [colors.colorSetId],
-    references: [colorSets.id],
-  }),
   creator: one(users, {
     fields: [colors.userId],
     references: [users.id],
@@ -152,9 +134,6 @@ export const userHiddenColorsRelations = relations(userHiddenColors, ({ one }) =
 // Types for TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
-
-export type ColorSet = typeof colorSets.$inferSelect;
-export type NewColorSet = typeof colorSets.$inferInsert;
 
 export type Color = typeof colors.$inferSelect;
 export type NewColor = typeof colors.$inferInsert;

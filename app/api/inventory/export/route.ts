@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { userInventory, colors, colorSets } from '@/lib/db/schema';
+import { userInventory, colors } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 
@@ -27,14 +27,9 @@ export async function GET() {
           nameZh: colors.nameZh,
           hexColor: colors.hexColor,
         },
-        colorSet: {
-          name: colorSets.name,
-          brand: colorSets.brand,
-        },
       })
       .from(userInventory)
       .leftJoin(colors, eq(userInventory.colorId, colors.id))
-      .leftJoin(colorSets, eq(colors.colorSetId, colorSets.id))
       .where(eq(userInventory.userId, session.user.id));
 
     const exportData = {
@@ -50,8 +45,6 @@ export async function GET() {
         colorNameZh: item.color?.nameZh,
         hexColor: item.color?.hexColor,
         quantity: item.quantity,
-        colorSet: item.colorSet?.name,
-        brand: item.colorSet?.brand,
         customColor: item.customColor,
       })),
     };

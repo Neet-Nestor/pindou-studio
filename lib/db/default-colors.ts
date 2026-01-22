@@ -326,3 +326,15 @@ export const defaultColors = [
 
 // Extract unique families for UI
 export const colorFamilies = Array.from(new Set(defaultColors.map(c => c.family)));
+
+// Common families (A-M) - 221 colors
+export const commonFamilies = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'M'] as const;
+
+// Less common families (ZG, P, Q, R, T, Y) - 70 colors
+export const uncommonFamilies = ['ZG', 'P', 'Q', 'R', 'T', 'Y'] as const;
+
+// Get colors by family selection
+export function getColorsByFamilies(families: readonly string[]) {
+  const familySet = new Set(families);
+  return defaultColors.filter(c => familySet.has(c.family));
+}

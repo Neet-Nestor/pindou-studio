@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = createColorSchema.parse(body);
 
-    // Create the custom color (no colorSetId, belongs to user)
+    // Create the custom color (belongs to user)
     const [newColor] = await db
       .insert(colors)
       .values({
@@ -38,7 +38,6 @@ export async function POST(request: Request) {
         nameZh: validatedData.nameZh,
         hexColor: validatedData.hexColor,
         userId: session.user.id,
-        colorSetId: null, // Custom color, not part of a set
       })
       .returning();
 

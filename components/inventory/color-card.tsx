@@ -19,11 +19,6 @@ interface ColorCardProps {
       nameZh: string | null;
       hexColor: string;
     } | null;
-    colorSet: {
-      id: string;
-      name: string;
-      brand: string;
-    } | null;
     customization: {
       id: string;
       customCode: string | null;
@@ -96,6 +91,7 @@ export default function ColorCard({ item, onQuantityUpdate, onHideColor }: Color
           },
           body: JSON.stringify({
             inventoryId: item.id,
+            colorId: item.color.id,
             quantity: quantityToSave,
           }),
         });

@@ -18,11 +18,6 @@ interface InventoryItem {
     nameZh: string | null;
     hexColor: string;
   } | null;
-  colorSet: {
-    id: string;
-    name: string;
-    brand: string;
-  } | null;
   customization: {
     id: string;
     customCode: string | null;

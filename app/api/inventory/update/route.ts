@@ -15,7 +15,7 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const { inventoryId, quantity, reason } = await request.json();
+    const { inventoryId, colorId, quantity, reason } = await request.json();
 
     if (typeof quantity !== 'number' || quantity < 0) {
       return NextResponse.json(
@@ -24,41 +24,72 @@ export async function PATCH(request: Request) {
       );
     }
 
-    // Get current inventory item
-    const [currentItem] = await db
-      .select()
-      .from(userInventory)
-      .where(
-        and(
-          eq(userInventory.id, inventoryId),
-          eq(userInventory.userId, session.user.id)
+    // Check if this is a new inventory item (temp ID) or existing
+    const isNewItem = inventoryId && inventoryId.startsWith('temp-');
+
+    let updatedItem;
+    let previousQuantity = 0;
+    let actualColorId = colorId;
+
+    if (isNewItem) {
+      // Create new inventory record for this color
+      if (!colorId) {
+        return NextResponse.json(
+          { message: 'Color ID required for new inventory item' },
+          { status: 400 }
+        );
+      }
+
+      [updatedItem] = await db
+        .insert(userInventory)
+        .values({
+          userId: session.user.id,
+          colorId,
+          quantity,
+          customColor: false,
+        })
+        .returning();
+
+      actualColorId = colorId;
+    } else {
+      // Update existing inventory item
+      const [currentItem] = await db
+        .select()
+        .from(userInventory)
+        .where(
+          and(
+            eq(userInventory.id, inventoryId),
+            eq(userInventory.userId, session.user.id)
+          )
         )
-      )
-      .limit(1);
+        .limit(1);
 
-    if (!currentItem) {
-      return NextResponse.json(
-        { message: 'Inventory item not found' },
-        { status: 404 }
-      );
+      if (!currentItem) {
+        return NextResponse.json(
+          { message: 'Inventory item not found' },
+          { status: 404 }
+        );
+      }
+
+      previousQuantity = currentItem.quantity;
+      actualColorId = currentItem.colorId;
+
+      [updatedItem] = await db
+        .update(userInventory)
+        .set({
+          quantity,
+          updatedAt: new Date(),
+        })
+        .where(eq(userInventory.id, inventoryId))
+        .returning();
     }
-
-    // Update inventory
-    const [updatedItem] = await db
-      .update(userInventory)
-      .set({
-        quantity,
-        updatedAt: new Date(),
-      })
-      .where(eq(userInventory.id, inventoryId))
-      .returning();
 
     // Record history
     await db.insert(inventoryHistory).values({
       userId: session.user.id,
-      colorId: currentItem.colorId,
-      changeAmount: quantity - currentItem.quantity,
-      previousQuantity: currentItem.quantity,
+      colorId: actualColorId,
+      changeAmount: quantity - previousQuantity,
+      previousQuantity,
       newQuantity: quantity,
       reason: reason || null,
     });

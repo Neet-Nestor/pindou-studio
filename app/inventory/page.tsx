@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { userInventory, colors, colorSets, userColorCustomizations, userHiddenColors } from '@/lib/db/schema';
+import { userInventory, colors, userColorCustomizations, userHiddenColors } from '@/lib/db/schema';
 import { eq, and, isNull, isNotNull } from 'drizzle-orm';
 import InventoryGrid from '@/components/inventory/inventory-grid';
 import EmptyInventory from '@/components/inventory/empty-inventory';
@@ -17,7 +17,8 @@ export default async function InventoryPage() {
     redirect('/login');
   }
 
-  // Fetch user's inventory with color, color set, and customization details
+  // Fetch ALL colors and LEFT JOIN with user's inventory
+  // This ensures users see all colors even when new ones are added
   const inventory = await db
     .select({
       id: userInventory.id,
@@ -32,11 +33,6 @@ export default async function InventoryPage() {
         nameZh: colors.nameZh,
         hexColor: colors.hexColor,
       },
-      colorSet: {
-        id: colorSets.id,
-        name: colorSets.name,
-        brand: colorSets.brand,
-      },
       customizationRaw: {
         id: userColorCustomizations.id,
         customCode: userColorCustomizations.customCode,
@@ -48,21 +44,29 @@ export default async function InventoryPage() {
         notes: userColorCustomizations.notes,
       },
     })
-    .from(userInventory)
-    .leftJoin(colors, eq(userInventory.colorId, colors.id))
-    .leftJoin(colorSets, eq(colors.colorSetId, colorSets.id))
+    .from(colors)
+    .leftJoin(
+      userInventory,
+      and(
+        eq(userInventory.colorId, colors.id),
+        eq(userInventory.userId, session.user.id)
+      )
+    )
     .leftJoin(
       userColorCustomizations,
       and(
         eq(userColorCustomizations.colorId, colors.id),
         eq(userColorCustomizations.userId, session.user.id)
       )
-    )
-    .where(eq(userInventory.userId, session.user.id));
+    );
 
-  // Transform inventory: convert customizationRaw to customization (null if no data)
+  // Transform inventory: handle colors without inventory records (default to quantity 0)
   const inventoryWithCustomizations = inventory.map(item => ({
-    ...item,
+    id: item.id || `temp-${item.color!.id}`, // Use temp ID if no inventory record yet
+    quantity: item.quantity ?? 0, // Default to 0 if no inventory record
+    customColor: item.customColor ?? false,
+    updatedAt: item.updatedAt,
+    color: item.color,
     customization: item.customizationRaw?.id ? item.customizationRaw : null,
   }));
 
