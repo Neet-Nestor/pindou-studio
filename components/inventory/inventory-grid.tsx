@@ -286,6 +286,42 @@ export default function InventoryGrid({
     }
   };
 
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json,.json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        const response = await fetch('/api/inventory/import', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(`导入成功！\n更新：${result.updated} 个颜色\n错误：${result.errors} 个`);
+          router.refresh();
+        } else {
+          alert(`导入失败：${result.message}`);
+        }
+      } catch (error) {
+        console.error('Import failed:', error);
+        alert('导入失败：文件格式错误或读取失败');
+      }
+    };
+    input.click();
+  };
+
   const handleReset = async () => {
     setIsResetting(true);
     try {
@@ -360,7 +396,7 @@ export default function InventoryGrid({
           <Button variant="outline" size="icon" onClick={handleExport} title="导出" className="h-9 w-9">
             <Download className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="outline" size="icon" title="导入" className="h-9 w-9">
+          <Button variant="outline" size="icon" onClick={handleImport} title="导入" className="h-9 w-9">
             <Upload className="h-3.5 w-3.5" />
           </Button>
           <Button
