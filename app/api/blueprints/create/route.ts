@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
       difficulty: validatedData.difficulty || null,
       pieceRequirements: pieceRequirementsJson,
       tags: validatedData.tags || null,
+      isOfficial: false, // User uploads are private by default
       createdBy: session.user.id,
     };
 

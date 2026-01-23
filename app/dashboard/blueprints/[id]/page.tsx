@@ -31,7 +31,6 @@ export default async function BlueprintDetailPage({ params }: BlueprintDetailPag
   const session = await auth();
   const { id } = await params;
 
-  // All blueprints are public - anyone can view
   const [blueprint] = await db
     .select()
     .from(blueprints)
@@ -43,6 +42,11 @@ export default async function BlueprintDetailPage({ params }: BlueprintDetailPag
 
   // Check if current user is the owner
   const isOwner = blueprint.createdBy === session!.user!.id;
+
+  // Only allow viewing if official OR user is owner
+  if (!blueprint.isOfficial && !isOwner) {
+    redirect('/dashboard/blueprints');
+  }
 
   const pieceRequirements = blueprint.pieceRequirements
     ? JSON.parse(blueprint.pieceRequirements)

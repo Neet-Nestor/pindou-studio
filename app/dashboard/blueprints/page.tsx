@@ -8,13 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Plus, Loader2 } from 'lucide-react';
 import { Blueprint } from '@/lib/db/schema';
 
-type FilterTab = 'all' | 'my';
+type FilterTab = 'official' | 'my';
 
 export default function BlueprintsPage() {
   const { data: session } = useSession();
   const [blueprints, setBlueprints] = useState<Blueprint[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<FilterTab>('all');
+  const [activeTab, setActiveTab] = useState<FilterTab>('official');
 
   useEffect(() => {
     fetchBlueprints();
@@ -33,8 +33,8 @@ export default function BlueprintsPage() {
     }
   };
 
-  const filteredBlueprints = activeTab === 'all'
-    ? blueprints
+  const filteredBlueprints = activeTab === 'official'
+    ? blueprints.filter(bp => bp.isOfficial === true)
     : blueprints.filter(bp => bp.createdBy === session?.user?.id);
 
   if (loading) {
@@ -68,15 +68,15 @@ export default function BlueprintsPage() {
       {/* Filter Tabs */}
       <div className="flex gap-2 border-b border-border">
         <button
-          onClick={() => setActiveTab('all')}
+          onClick={() => setActiveTab('official')}
           className={`px-4 py-2 font-medium transition-colors relative ${
-            activeTab === 'all'
+            activeTab === 'official'
               ? 'text-primary'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          全部图纸
-          {activeTab === 'all' && (
+          官方图纸
+          {activeTab === 'official' && (
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
           )}
         </button>
