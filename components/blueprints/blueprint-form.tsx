@@ -148,7 +148,7 @@ export function BlueprintForm({ blueprint, mode }: BlueprintFormProps) {
           id="tags"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
-          placeholder="用逗号分隔多个标签"
+          placeholder="用逗号分隔多个标签（支持中英文逗号）"
           disabled={loading}
           className="rounded-xl border-2 focus:border-primary transition-colors"
         />

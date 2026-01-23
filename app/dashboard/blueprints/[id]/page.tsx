@@ -31,19 +31,18 @@ export default async function BlueprintDetailPage({ params }: BlueprintDetailPag
   const session = await auth();
   const { id } = await params;
 
+  // Allow viewing any public blueprint
   const [blueprint] = await db
     .select()
     .from(blueprints)
-    .where(
-      and(
-        eq(blueprints.id, id),
-        eq(blueprints.createdBy, session!.user!.id)
-      )
-    );
+    .where(eq(blueprints.id, id));
 
-  if (!blueprint) {
+  if (!blueprint || !blueprint.isPublic) {
     redirect('/dashboard/blueprints');
   }
+
+  // Check if current user is the owner
+  const isOwner = blueprint.createdBy === session!.user!.id;
 
   const pieceRequirements = blueprint.pieceRequirements
     ? JSON.parse(blueprint.pieceRequirements)
@@ -76,20 +75,22 @@ export default async function BlueprintDetailPage({ params }: BlueprintDetailPag
             </Badge>
           )}
         </div>
-        <div className="flex gap-2">
-          <Link href={`/dashboard/blueprints/${blueprint.id}/edit`}>
-            <Button variant="outline" size="sm">
-              <Edit className="mr-2 h-4 w-4" />
-              编辑
-            </Button>
-          </Link>
-          <form action={handleDelete}>
-            <Button variant="destructive" size="sm" type="submit">
-              <Trash2 className="mr-2 h-4 w-4" />
-              删除
-            </Button>
-          </form>
-        </div>
+        {isOwner && (
+          <div className="flex gap-2">
+            <Link href={`/dashboard/blueprints/${blueprint.id}/edit`}>
+              <Button variant="outline" size="sm">
+                <Edit className="mr-2 h-4 w-4" />
+                编辑
+              </Button>
+            </Link>
+            <form action={handleDelete}>
+              <Button variant="destructive" size="sm" type="submit">
+                <Trash2 className="mr-2 h-4 w-4" />
+                删除
+              </Button>
+            </form>
+          </div>
+        )}
       </div>
 
       {/* Image */}

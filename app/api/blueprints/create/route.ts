@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       difficulty: validatedData.difficulty || null,
       pieceRequirements: pieceRequirementsJson,
       tags: validatedData.tags || null,
-      isPublic: false,
+      isPublic: true,
       createdBy: session.user.id,
     };
 
