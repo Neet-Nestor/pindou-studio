@@ -66,7 +66,7 @@ export const userHiddenColors = pgTable('user_hidden_colors', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-// Blueprints table - stores bead blueprints users want to build
+// Blueprints table - stores bead blueprints (all public)
 export const blueprints = pgTable('blueprints', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
@@ -75,7 +75,6 @@ export const blueprints = pgTable('blueprints', {
   difficulty: text('difficulty'), // 'easy' | 'medium' | 'hard'
   pieceRequirements: text('piece_requirements'), // JSON: {"A5": 50, "B12": 30}
   tags: text('tags'), // Comma-separated for search
-  isPublic: boolean('is_public').default(false).notNull(), // For future community sharing
   createdBy: uuid('created_by').references(() => users.id, { onDelete: 'cascade' }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

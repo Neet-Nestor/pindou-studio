@@ -31,13 +31,13 @@ export default async function BlueprintDetailPage({ params }: BlueprintDetailPag
   const session = await auth();
   const { id } = await params;
 
-  // Allow viewing any public blueprint
+  // All blueprints are public - anyone can view
   const [blueprint] = await db
     .select()
     .from(blueprints)
     .where(eq(blueprints.id, id));
 
-  if (!blueprint || !blueprint.isPublic) {
+  if (!blueprint) {
     redirect('/dashboard/blueprints');
   }
 
