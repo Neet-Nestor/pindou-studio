@@ -12,6 +12,7 @@ const buildHistoryUpdateSchema = z.object({
   piecesUsed: z.record(z.string(), z.number()).optional(),
   blueprintId: z.string().uuid().optional().nullable(),
   completedAt: z.string().datetime().optional(),
+  isPublic: z.boolean().optional(),
 });
 
 // GET - Fetch single build

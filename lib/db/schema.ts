@@ -90,6 +90,7 @@ export const buildHistory = pgTable('build_history', {
   description: text('description'),
   imageUrls: text('image_urls'), // JSON array: ["url1", "url2", ...]
   piecesUsed: text('pieces_used'), // JSON: {"A5": 50, "B12": 30}
+  isPublic: boolean('is_public').default(false).notNull(), // Public sharing toggle
   completedAt: timestamp('completed_at').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

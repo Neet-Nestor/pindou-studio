@@ -11,6 +11,7 @@ const buildHistorySchema = z.object({
   piecesUsed: z.record(z.string(), z.number()).optional(),
   blueprintId: z.string().uuid().optional(),
   completedAt: z.string().datetime(),
+  isPublic: z.boolean().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -36,6 +37,7 @@ export async function POST(request: NextRequest) {
       description: validatedData.description || null,
       imageUrls: imageUrlsJson,
       piecesUsed: piecesUsedJson,
+      isPublic: validatedData.isPublic || false,
       completedAt: new Date(validatedData.completedAt),
     };
 

@@ -11,6 +11,7 @@ import AddCustomColorDialog from './add-custom-color-dialog';
 import FamilyGroup from './family-group';
 import ColorCard from './color-card';
 import { TutorialBanner } from './mobile-tutorial';
+import { toast } from 'sonner';
 
 interface InventoryItem {
   id: string;
@@ -221,7 +222,7 @@ export default function InventoryGrid({
         }),
       });
     } catch (error) {
-      console.error('Failed to toggle family visibility:', error);
+      toast.error('切换失败，请重试');
     }
   };
 
@@ -242,7 +243,7 @@ export default function InventoryGrid({
         }),
       });
     } catch (error) {
-      console.error('Failed to hide color:', error);
+      toast.error('隐藏失败，请重试');
     }
   };
 
@@ -263,7 +264,7 @@ export default function InventoryGrid({
         }),
       });
     } catch (error) {
-      console.error('Failed to unhide color:', error);
+      toast.error('取消隐藏失败，请重试');
     }
   };
 
@@ -281,8 +282,9 @@ export default function InventoryGrid({
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      toast.success('导出成功');
     } catch (error) {
-      console.error('Export failed:', error);
+      toast.error('导出失败，请重试');
     }
   };
 
@@ -309,14 +311,13 @@ export default function InventoryGrid({
         const result = await response.json();
 
         if (response.ok) {
-          alert(`导入成功！\n更新：${result.updated} 个颜色\n错误：${result.errors} 个`);
+          toast.success(`导入成功！更新：${result.updated} 个颜色，错误：${result.errors} 个`);
           router.refresh();
         } else {
-          alert(`导入失败：${result.message}`);
+          toast.error(`导入失败：${result.message}`);
         }
       } catch (error) {
-        console.error('Import failed:', error);
-        alert('导入失败：文件格式错误或读取失败');
+        toast.error('导入失败：文件格式错误或读取失败');
       }
     };
     input.click();
@@ -333,12 +334,12 @@ export default function InventoryGrid({
         router.push('/onboarding');
         router.refresh();
       } else {
-        console.error('Reset failed');
+        toast.error('重置失败，请重试');
         setIsResetting(false);
         setShowResetDialog(false);
       }
     } catch (error) {
-      console.error('Reset failed:', error);
+      toast.error('重置失败，请重试');
       setIsResetting(false);
       setShowResetDialog(false);
     }

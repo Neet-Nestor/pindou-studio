@@ -62,7 +62,7 @@ export default async function BlueprintDetailPage({ params }: BlueprintDetailPag
   }
 
   return (
-    <div className="container mx-auto max-w-4xl space-y-6">
+    <div className="container mx-auto max-w-4xl space-y-6 px-6 py-8">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="space-y-1">

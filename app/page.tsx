@@ -15,6 +15,9 @@ export default function Home() {
           <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <Button variant="ghost" size="sm" className="h-9 px-3" asChild>
+              <Link href="/gallery">作品展示</Link>
+            </Button>
+            <Button variant="ghost" size="sm" className="h-9 px-3" asChild>
               <Link href="/login">登录</Link>
             </Button>
             <Button size="sm" className="h-9 px-3" asChild>

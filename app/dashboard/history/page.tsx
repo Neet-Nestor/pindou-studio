@@ -33,14 +33,14 @@ export default async function HistoryPage() {
   });
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
+    <div className="container mx-auto max-w-7xl space-y-6 px-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h2 className="text-3xl font-bold tracking-tight text-primary">
+          <h1 className="text-3xl font-bold tracking-tight">
             我的作品
-          </h2>
-          <p className="text-sm text-muted-foreground">
+          </h1>
+          <p className="text-muted-foreground">
             共 <span className="font-semibold text-foreground">{totalBuilds}</span> 个作品
           </p>
         </div>

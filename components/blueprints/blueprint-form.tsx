@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ImageUpload } from '@/components/upload/image-upload';
 import { PieceRequirementsInput } from './piece-requirements-input';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface BlueprintFormProps {
   blueprint?: Blueprint;
@@ -20,7 +21,6 @@ interface BlueprintFormProps {
 export function BlueprintForm({ blueprint, mode }: BlueprintFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const [name, setName] = useState(blueprint?.name || '');
   const [description, setDescription] = useState(blueprint?.description || '');
@@ -35,7 +35,6 @@ export function BlueprintForm({ blueprint, mode }: BlueprintFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
@@ -66,10 +65,11 @@ export function BlueprintForm({ blueprint, mode }: BlueprintFormProps) {
       }
 
       const data = await response.json();
+      toast.success(mode === 'create' ? '图纸已创建' : '图纸已更新');
       router.push(`/dashboard/blueprints/${data.blueprint.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      toast.error(err instanceof Error ? err.message : '保存失败，请重试');
     } finally {
       setLoading(false);
     }

@@ -9,8 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUpload } from '@/components/upload/image-upload';
 import { PieceRequirementsInput } from '@/components/blueprints/piece-requirements-input';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Globe } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 
 interface BuildFormProps {
   build?: BuildHistory;
@@ -21,7 +23,6 @@ interface BuildFormProps {
 export function BuildForm({ build, blueprints = [], mode }: BuildFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const [title, setTitle] = useState(build?.title || '');
   const [description, setDescription] = useState(build?.description || '');
@@ -37,10 +38,10 @@ export function BuildForm({ build, blueprints = [], mode }: BuildFormProps) {
       ? new Date(build.completedAt).toISOString().slice(0, 16)
       : new Date().toISOString().slice(0, 16)
   );
+  const [isPublic, setIsPublic] = useState(build?.isPublic || false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
@@ -51,6 +52,7 @@ export function BuildForm({ build, blueprints = [], mode }: BuildFormProps) {
         piecesUsed,
         blueprintId: blueprintId || undefined,
         completedAt: new Date(completedAt).toISOString(),
+        isPublic,
       };
 
       const url = mode === 'create'
@@ -71,10 +73,11 @@ export function BuildForm({ build, blueprints = [], mode }: BuildFormProps) {
       }
 
       const data = await response.json();
+      toast.success(mode === 'create' ? '作品已保存' : '作品已更新');
       router.push(`/dashboard/history/${data.build.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      toast.error(err instanceof Error ? err.message : '保存失败，请重试');
     } finally {
       setLoading(false);
     }
@@ -166,6 +169,28 @@ export function BuildForm({ build, blueprints = [], mode }: BuildFormProps) {
           disabled={loading}
           className="rounded-xl border-2 focus:border-primary transition-colors"
         />
+      </div>
+
+      {/* Public Toggle */}
+      <div className="flex items-center space-x-3 p-4 rounded-xl border-2 bg-accent/30">
+        <Checkbox
+          id="isPublic"
+          checked={isPublic}
+          onCheckedChange={(checked) => setIsPublic(checked as boolean)}
+          disabled={loading}
+        />
+        <div className="flex-1">
+          <label
+            htmlFor="isPublic"
+            className="text-sm font-semibold cursor-pointer flex items-center gap-2"
+          >
+            <Globe className="h-4 w-4 text-secondary" />
+            公开分享作品
+          </label>
+          <p className="text-xs text-muted-foreground mt-1">
+            允许其他用户浏览和欣赏你的作品
+          </p>
+        </div>
       </div>
 
       {/* Error Message */}

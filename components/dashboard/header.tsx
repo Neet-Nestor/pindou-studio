@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, Package, BookOpen, History, LogOut } from 'lucide-react';
+import { Menu, Package, BookOpen, History, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Logo } from '@/components/logo';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Sheet,
   SheetContent,
@@ -18,6 +19,10 @@ import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   onSignOut: () => void;
+  user?: {
+    name?: string | null;
+    image?: string | null;
+  };
 }
 
 const navItems = [
@@ -31,7 +36,7 @@ const navItems = [
     href: '/dashboard/blueprints',
     label: '图纸库',
     icon: BookOpen,
-    activeColor: 'bg-secondary text-secondary-foreground',
+    activeColor: 'bg-primary text-primary-foreground',
   },
   {
     href: '/dashboard/history',
@@ -39,9 +44,15 @@ const navItems = [
     icon: History,
     activeColor: 'bg-primary text-primary-foreground',
   },
+  {
+    href: '/dashboard/settings',
+    label: '个人设置',
+    icon: Settings,
+    activeColor: 'bg-primary text-primary-foreground',
+  },
 ];
 
-export function DashboardHeader({ onSignOut }: HeaderProps) {
+export function DashboardHeader({ onSignOut, user }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -62,7 +73,28 @@ export function DashboardHeader({ onSignOut }: HeaderProps) {
                   <Logo href="/dashboard/inventory" size="md" />
                 </SheetTitle>
               </SheetHeader>
-              <nav className="mt-8 space-y-2">
+
+              {/* User Profile Section */}
+              {user && (
+                <Link
+                  href="/dashboard/settings"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 p-4 mt-4 rounded-xl bg-accent/50 hover:bg-accent transition-colors"
+                >
+                  <Avatar className="h-10 w-10 border-2 border-primary">
+                    <AvatarImage src={user.image || undefined} alt={user.name || 'User'} />
+                    <AvatarFallback className="text-sm bg-primary text-primary-foreground">
+                      {user.name?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{user.name || '未命名用户'}</p>
+                    <p className="text-xs text-muted-foreground">查看个人设置</p>
+                  </div>
+                </Link>
+              )}
+
+              <nav className="mt-6 space-y-2">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = pathname?.startsWith(item.href);
@@ -106,6 +138,20 @@ export function DashboardHeader({ onSignOut }: HeaderProps) {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
+          {user && (
+            <Link
+              href="/dashboard/settings"
+              className="hidden md:flex items-center gap-2 mr-2 px-3 py-1.5 rounded-full hover:bg-accent transition-colors"
+            >
+              <Avatar className="h-8 w-8 border-2 border-primary">
+                <AvatarImage src={user.image || undefined} alt={user.name || 'User'} />
+                <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                  {user.name?.charAt(0).toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium">{user.name}</span>
+            </Link>
+          )}
           <ThemeToggle />
           <Button
             variant="ghost"

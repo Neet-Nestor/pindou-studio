@@ -7,6 +7,8 @@ import { eq, and } from 'drizzle-orm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trash2, Package, Calendar, ExternalLink, ArrowLeft } from 'lucide-react';
+import { ShareToggle } from '@/components/history/share-toggle';
+import { CopyLinkButton } from '@/components/history/copy-link-button';
 
 interface BuildDetailPageProps {
   params: Promise<{
@@ -62,7 +64,7 @@ export default async function BuildDetailPage({ params }: BuildDetailPageProps) 
   }
 
   return (
-    <div className="container mx-auto max-w-5xl space-y-6 p-6">
+    <div className="container mx-auto max-w-5xl space-y-6 px-6 py-8">
       {/* Back Button */}
       <Link href="/dashboard/history">
         <Button variant="ghost" size="sm" className="gap-2 hover:bg-accent">
@@ -81,6 +83,8 @@ export default async function BuildDetailPage({ params }: BuildDetailPageProps) 
           </div>
         </div>
         <div className="flex gap-2">
+          <ShareToggle buildId={id} initialIsPublic={build.isPublic} />
+          {build.isPublic && <CopyLinkButton buildId={id} />}
           <form action={handleDelete}>
             <Button variant="destructive" size="sm" type="submit">
               <Trash2 className="mr-2 h-4 w-4" />
