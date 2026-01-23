@@ -157,13 +157,6 @@ export function BlueprintForm({ blueprint, mode }: BlueprintFormProps) {
         </p>
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="p-4 rounded-xl bg-destructive/10 border-2 border-destructive/30">
-          <p className="text-sm text-destructive font-medium">{error}</p>
-        </div>
-      )}
-
       {/* Actions */}
       <div className="flex gap-3 pt-4">
         <Button

@@ -38,11 +38,7 @@ export default function SettingsPage() {
         image: data.user.image || null,
       });
     } catch (error) {
-      toast({
-        title: '错误',
-        description: '无法加载个人信息',
-        variant: 'destructive',
-      });
+      toast.error('无法加载个人信息');
     } finally {
       setLoading(false);
     }
