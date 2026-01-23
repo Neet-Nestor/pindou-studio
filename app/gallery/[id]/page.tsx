@@ -5,7 +5,8 @@ import { buildHistory, users, blueprints } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Package, Calendar, ExternalLink, ArrowLeft } from 'lucide-react';
+import { BackButton } from '@/components/ui/back-button';
+import { Package, Calendar, ExternalLink } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface PublicBuildPageProps {
@@ -70,12 +71,7 @@ export default async function PublicBuildPage({ params }: PublicBuildPageProps) 
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link href="/gallery">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              返回作品展示
-            </Button>
-          </Link>
+          <BackButton label="返回作品展示" fallbackHref="/gallery" />
           <Link href="/">
             <Button variant="ghost" size="sm">
               返回首页

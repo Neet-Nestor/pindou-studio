@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 
 const ADMIN_EMAILS = [
   'imba.qxy@gmail.com',
-  'ccliu1945@gmail.com'
+  'ccliu@gmail.com'
 ];
 
 async function setAdmins() {

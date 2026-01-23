@@ -7,6 +7,7 @@ import { eq, and } from 'drizzle-orm';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { BackButton } from '@/components/ui/back-button';
 import { Edit, Trash2, Package } from 'lucide-react';
 
 interface BlueprintDetailPageProps {
@@ -66,6 +67,9 @@ export default async function BlueprintDetailPage({ params }: BlueprintDetailPag
 
   return (
     <div className="container mx-auto max-w-4xl space-y-6 px-6 py-8">
+      {/* Back Button */}
+      <BackButton fallbackHref="/dashboard/blueprints" />
+
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="space-y-1">

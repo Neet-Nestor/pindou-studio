@@ -6,7 +6,8 @@ import { buildHistory, blueprints } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Trash2, Package, Calendar, ExternalLink, ArrowLeft, Edit } from 'lucide-react';
+import { BackButton } from '@/components/ui/back-button';
+import { Trash2, Package, Calendar, ExternalLink, Edit } from 'lucide-react';
 import { ShareToggle } from '@/components/history/share-toggle';
 import { CopyLinkButton } from '@/components/history/copy-link-button';
 
@@ -66,12 +67,7 @@ export default async function BuildDetailPage({ params }: BuildDetailPageProps) 
   return (
     <div className="container mx-auto max-w-5xl space-y-6 px-6 py-8">
       {/* Back Button */}
-      <Link href="/dashboard/history">
-        <Button variant="ghost" size="sm" className="gap-2 hover:bg-accent">
-          <ArrowLeft className="h-4 w-4" />
-          返回列表
-        </Button>
-      </Link>
+      <BackButton label="返回列表" fallbackHref="/dashboard/history" />
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
