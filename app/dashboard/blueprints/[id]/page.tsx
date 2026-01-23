@@ -146,12 +146,15 @@ export default async function BlueprintDetailPage({ params }: BlueprintDetailPag
       {blueprint.tags && (
         <Card>
           <CardContent className="p-6">
-            <h3 className="font-semibold mb-2">标签</h3>
+            <h3 className="font-semibold mb-3">标签</h3>
             <div className="flex flex-wrap gap-2">
-              {blueprint.tags.split(',').map((tag, idx) => (
-                <Badge key={idx} variant="outline">
+              {blueprint.tags.replace(/，/g, ',').split(',').map((tag, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors"
+                >
                   {tag.trim()}
-                </Badge>
+                </span>
               ))}
             </div>
           </CardContent>

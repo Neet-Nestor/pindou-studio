@@ -12,16 +12,19 @@ interface BlueprintCardProps {
 
 const difficultyConfig = {
   easy: {
-    color: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
-    label: '✨ 简单',
+    color: 'bg-emerald-500 text-white',
+    label: '简单',
+    icon: '✨',
   },
   medium: {
-    color: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30',
-    label: '⚡ 中等',
+    color: 'bg-amber-500 text-white',
+    label: '中等',
+    icon: '⚡',
   },
   hard: {
-    color: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30',
-    label: '🔥 困难',
+    color: 'bg-rose-500 text-white',
+    label: '困难',
+    icon: '🔥',
   },
 };
 
@@ -59,12 +62,18 @@ export function BlueprintCard({ blueprint }: BlueprintCardProps) {
           {/* Difficulty badge overlay */}
           {blueprint.difficulty && (
             <div className="absolute top-3 right-3">
-              <Badge
-                variant="secondary"
-                className={`${difficultyConfig[blueprint.difficulty as keyof typeof difficultyConfig].color} font-semibold px-3 py-1 shadow-lg backdrop-blur-sm border`}
-              >
-                {difficultyConfig[blueprint.difficulty as keyof typeof difficultyConfig].label}
-              </Badge>
+              <div className="relative">
+                {/* Shadow backdrop */}
+                <div className="absolute inset-0 bg-black/40 rounded-full blur-md"></div>
+                {/* Badge */}
+                <Badge
+                  variant="secondary"
+                  className={`${difficultyConfig[blueprint.difficulty as keyof typeof difficultyConfig].color} font-semibold px-2.5 py-1 text-xs shadow-2xl relative border-0`}
+                >
+                  <span className="mr-1">{difficultyConfig[blueprint.difficulty as keyof typeof difficultyConfig].icon}</span>
+                  {difficultyConfig[blueprint.difficulty as keyof typeof difficultyConfig].label}
+                </Badge>
+              </div>
             </div>
           )}
         </div>
@@ -79,6 +88,20 @@ export function BlueprintCard({ blueprint }: BlueprintCardProps) {
             <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
               {blueprint.description}
             </p>
+          )}
+
+          {/* Tags */}
+          {blueprint.tags && (
+            <div className="flex flex-wrap gap-1.5">
+              {blueprint.tags.replace(/，/g, ',').split(',').slice(0, 3).map((tag, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-secondary/10 text-secondary"
+                >
+                  {tag.trim()}
+                </span>
+              ))}
+            </div>
           )}
 
           {/* Footer info */}
