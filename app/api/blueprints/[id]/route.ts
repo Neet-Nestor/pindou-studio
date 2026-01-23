@@ -12,6 +12,7 @@ const blueprintUpdateSchema = z.object({
   difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
   pieceRequirements: z.record(z.string(), z.number()).optional(),
   tags: z.string().optional(),
+  isOfficial: z.boolean().optional(),
 });
 
 // GET - Fetch single blueprint
@@ -81,8 +82,22 @@ export async function PATCH(
       return NextResponse.json({ error: 'Blueprint not found' }, { status: 404 });
     }
 
+    // Check if user is admin
+    const isAdmin = session.user.role === 'admin';
+
     // Prepare update data
     const updateData: Record<string, unknown> = { ...validatedData };
+
+    // Only admins can set isOfficial
+    if ('isOfficial' in validatedData) {
+      if (isAdmin) {
+        updateData.isOfficial = validatedData.isOfficial;
+      } else {
+        // Non-admins cannot change isOfficial status
+        delete updateData.isOfficial;
+      }
+    }
+
     if (validatedData.pieceRequirements) {
       updateData.pieceRequirements = JSON.stringify(validatedData.pieceRequirements);
     }

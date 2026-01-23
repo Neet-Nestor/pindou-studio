@@ -65,15 +65,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.name = token.name as string | null
         session.user.email = token.email as string
         session.user.image = token.picture as string | null
+        session.user.role = token.role as string
       }
       return session
     },
     async jwt({ token, user, trigger, session }) {
-      if (user) {
+      if (user && user.id) {
         token.sub = user.id
         token.name = user.name
         token.email = user.email
         token.picture = user.image
+
+        // Fetch role from database
+        const [dbUser] = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, user.id))
+          .limit(1)
+
+        token.role = dbUser?.role || 'user'
       }
       // Handle session updates (e.g., after profile update)
       if (trigger === "update" && session) {

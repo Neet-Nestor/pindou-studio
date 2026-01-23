@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, Package, BookOpen, History, Settings, LogOut } from 'lucide-react';
+import { Menu, Package, BookOpen, History, Settings, LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,6 +23,7 @@ interface HeaderProps {
   user?: {
     name?: string | null;
     image?: string | null;
+    role?: string;
   };
 }
 
@@ -88,7 +90,15 @@ export function DashboardHeader({ onSignOut, user }: HeaderProps) {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{user.name || '未命名用户'}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold truncate">{user.name || '未命名用户'}</p>
+                      {user.role === 'admin' && (
+                        <Badge variant="secondary" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-xs px-1.5 py-0">
+                          <Shield className="h-3 w-3 mr-0.5" />
+                          管理员
+                        </Badge>
+                      )}
+                    </div>
                     <p className="text-xs text-muted-foreground">查看个人设置</p>
                   </div>
                 </Link>
@@ -149,7 +159,15 @@ export function DashboardHeader({ onSignOut, user }: HeaderProps) {
                   {user.name?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium">{user.name}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">{user.name}</span>
+                {user.role === 'admin' && (
+                  <Badge variant="secondary" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-xs px-1.5 py-0">
+                    <Shield className="h-3 w-3 mr-0.5" />
+                    管理员
+                  </Badge>
+                )}
+              </div>
             </Link>
           )}
           <ThemeToggle />

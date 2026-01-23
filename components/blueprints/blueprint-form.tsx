@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Blueprint } from '@/lib/db/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ImageUpload } from '@/components/upload/image-upload';
 import { PieceRequirementsInput } from './piece-requirements-input';
 import { Loader2 } from 'lucide-react';
@@ -20,6 +22,7 @@ interface BlueprintFormProps {
 
 export function BlueprintForm({ blueprint, mode }: BlueprintFormProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
 
   const [name, setName] = useState(blueprint?.name || '');
@@ -32,6 +35,9 @@ export function BlueprintForm({ blueprint, mode }: BlueprintFormProps) {
     blueprint?.pieceRequirements ? JSON.parse(blueprint.pieceRequirements) : {}
   );
   const [tags, setTags] = useState(blueprint?.tags || '');
+  const [isOfficial, setIsOfficial] = useState(blueprint?.isOfficial || false);
+
+  const isAdmin = session?.user?.role === 'admin';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +51,7 @@ export function BlueprintForm({ blueprint, mode }: BlueprintFormProps) {
         difficulty: difficulty || undefined,
         pieceRequirements,
         tags,
+        isOfficial: isAdmin ? isOfficial : false, // Only allow admins to set official
       };
 
       const url = mode === 'create'
@@ -156,6 +163,29 @@ export function BlueprintForm({ blueprint, mode }: BlueprintFormProps) {
           例如: 动物, 卡通, 简单
         </p>
       </div>
+
+      {/* Official (Admin Only) */}
+      {isAdmin && (
+        <div className="flex items-center space-x-2 p-4 border-2 border-primary/20 rounded-xl bg-primary/5">
+          <Checkbox
+            id="isOfficial"
+            checked={isOfficial}
+            onCheckedChange={(checked) => setIsOfficial(checked as boolean)}
+            disabled={loading}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <Label
+              htmlFor="isOfficial"
+              className="text-sm font-semibold cursor-pointer"
+            >
+              发布为官方图纸
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              官方图纸将对所有用户公开可见
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex gap-3 pt-4">

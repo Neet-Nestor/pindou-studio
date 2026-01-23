@@ -11,6 +11,7 @@ const blueprintSchema = z.object({
   difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
   pieceRequirements: z.record(z.string(), z.number()).optional(),
   tags: z.string().optional(),
+  isOfficial: z.boolean().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -22,6 +23,12 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const validatedData = blueprintSchema.parse(body);
+
+    // Check if user is admin
+    const isAdmin = session.user.role === 'admin';
+
+    // Only admins can publish official blueprints
+    const isOfficial = isAdmin && validatedData.isOfficial === true;
 
     // Convert pieceRequirements object to JSON string
     const pieceRequirementsJson = validatedData.pieceRequirements
@@ -35,7 +42,7 @@ export async function POST(request: NextRequest) {
       difficulty: validatedData.difficulty || null,
       pieceRequirements: pieceRequirementsJson,
       tags: validatedData.tags || null,
-      isOfficial: false, // User uploads are private by default
+      isOfficial,
       createdBy: session.user.id,
     };
 

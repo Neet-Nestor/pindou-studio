@@ -43,6 +43,13 @@
       "when": 1769165176104,
       "tag": "0005_low_susan_delgado",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1769165512743,
+      "tag": "0006_high_night_thrasher",
+      "breakpoints": true
     }
   ]
 }
