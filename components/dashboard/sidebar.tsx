@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Package, BookOpen, History, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Package, BookOpen, Wand2, History, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -19,6 +19,13 @@ const navItems = [
     href: '/dashboard/blueprints',
     label: '图纸库',
     icon: BookOpen,
+    color: 'hover:bg-primary/5',
+    activeColor: 'bg-primary text-primary-foreground',
+  },
+  {
+    href: '/dashboard/builder',
+    label: '图纸生成器',
+    icon: Wand2,
     color: 'hover:bg-primary/5',
     activeColor: 'bg-primary text-primary-foreground',
   },
