@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Logo } from '@/components/logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -46,29 +46,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="fixed top-4 right-4">
         <ThemeToggle />
       </div>
-      <Link href="/" className="flex items-center gap-2 mb-8 text-2xl font-bold hover:opacity-80 transition-opacity">
-        <Image src="/icon.png" alt="拼豆Studio" width={32} height={32} className="h-8 w-8" />
-        <span>拼豆Studio</span>
-      </Link>
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">欢迎回来</CardTitle>
-          <CardDescription>登录您的账户</CardDescription>
+      <Logo href="/" size="lg" className="mb-8" />
+      <Card className="w-full max-w-md shadow-xl border-2">
+        <CardHeader className="space-y-2">
+          <CardTitle className="text-3xl font-bold text-primary">欢迎回来</CardTitle>
+          <CardDescription className="text-base">登录您的账户继续创作</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded">
+              <div className="bg-destructive/10 border-2 border-destructive/30 text-destructive px-4 py-3 rounded-lg font-medium">
                 {error}
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
+              <Label htmlFor="email" className="text-sm font-medium">邮箱</Label>
               <Input
                 id="email"
                 name="email"
@@ -76,21 +73,23 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 required
                 disabled={isLoading}
+                className="border-2 h-11"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
+              <Label htmlFor="password" className="text-sm font-medium">密码</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 required
                 disabled={isLoading}
+                className="border-2 h-11"
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full h-11 shadow-lg hover:shadow-xl transition-all text-base font-medium" disabled={isLoading}>
               {isLoading ? '加载中...' : '登录'}
             </Button>
           </CardContent>
