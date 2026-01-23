@@ -6,7 +6,7 @@ import { buildHistory, blueprints } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Trash2, Package, Calendar, ExternalLink, ArrowLeft } from 'lucide-react';
+import { Trash2, Package, Calendar, ExternalLink, ArrowLeft, Edit } from 'lucide-react';
 import { ShareToggle } from '@/components/history/share-toggle';
 import { CopyLinkButton } from '@/components/history/copy-link-button';
 
@@ -83,6 +83,12 @@ export default async function BuildDetailPage({ params }: BuildDetailPageProps) 
           </div>
         </div>
         <div className="flex gap-2">
+          <Link href={`/dashboard/history/${build.id}/edit`}>
+            <Button variant="outline" size="sm">
+              <Edit className="mr-2 h-4 w-4" />
+              编辑
+            </Button>
+          </Link>
           <ShareToggle buildId={id} initialIsPublic={build.isPublic} />
           {build.isPublic && <CopyLinkButton buildId={id} />}
           <form action={handleDelete}>
