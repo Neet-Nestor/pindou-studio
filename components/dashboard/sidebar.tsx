@@ -132,7 +132,7 @@ export function Sidebar() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t bg-card/95 backdrop-blur-xl z-50 shadow-lg">
-        <div className="flex items-center justify-around px-3 py-3 safe-area-inset-bottom">
+        <div className="flex items-center justify-around px-1 py-2 safe-area-inset-bottom">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname?.startsWith(item.href);
@@ -142,7 +142,7 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex flex-col items-center gap-1.5 px-5 py-2.5 rounded-xl transition-all duration-300 min-w-[90px]',
+                  'flex flex-col items-center gap-1 px-1.5 py-1.5 rounded-lg transition-all duration-300 flex-1 max-w-[70px]',
                   'active:scale-95',
                   isActive
                     ? `${item.activeColor} shadow-md`
@@ -150,12 +150,12 @@ export function Sidebar() {
                 )}
               >
                 <div className={cn(
-                  'flex items-center justify-center w-9 h-9 rounded-lg transition-all',
+                  'flex items-center justify-center w-7 h-7 rounded-lg transition-all',
                   isActive && 'bg-white/20'
                 )}>
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4" />
                 </div>
-                <span className="text-xs font-medium tracking-tight">{item.label}</span>
+                <span className="text-[10px] font-medium tracking-tight leading-tight text-center">{item.label}</span>
               </Link>
             );
           })}
