@@ -121,7 +121,7 @@ export function Sidebar() {
         {/* Bottom decoration */}
         {!collapsed && (
           <div className="p-5 border-t flex-shrink-0">
-            <div className="p-4 rounded-xl bg-accent border">
+            <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
               <p className="text-xs text-muted-foreground leading-relaxed">
                 💡 <span className="font-medium">小提示：</span>使用图纸库规划作品，完成后在我的作品中记录
               </p>
