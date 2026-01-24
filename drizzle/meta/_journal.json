@@ -50,6 +50,27 @@
       "when": 1769165512743,
       "tag": "0006_high_night_thrasher",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1769204754185,
+      "tag": "0007_spooky_titania",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1769213242499,
+      "tag": "0008_living_titanium_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1769214284592,
+      "tag": "0009_nervous_lightspeed",
+      "breakpoints": true
     }
   ]
 }

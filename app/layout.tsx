@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "拼豆Studio",
-  description: "专业的拼豆库存管理工具，支持多品牌颜色套装",
+  title: "拼豆Studio - 创作工作台",
+  description: "管理拼豆库存，发现创意图纸，分享精彩作品。专为拼豆爱好者打造的一站式创作平台。",
   icons: {
     icon: '/icon.png',
   },

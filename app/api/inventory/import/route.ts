@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { userInventory, colors } from '@/lib/db/schema';
+import { userInventory, colors, userSettings } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 
@@ -34,6 +34,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Get user's brand settings
+    const settings = await db.query.userSettings.findFirst({
+      where: eq(userSettings.userId, session.user.id),
+    });
+    const primaryBrand = settings?.primaryBrand || 'MARD';
 
     let updatedCount = 0;
     let errorCount = 0;
@@ -80,6 +86,8 @@ export async function POST(request: NextRequest) {
           await db.insert(userInventory).values({
             userId: session.user.id,
             colorId: color[0].id,
+            hexColor: color[0].hexColor,
+            brand: primaryBrand,
             quantity: item.quantity,
             customColor: item.customColor || false,
             updatedAt: new Date(),

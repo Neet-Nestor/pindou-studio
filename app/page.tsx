@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Search, BookImage, Map, Users, Cloud, Sparkles } from 'lucide-react';
+import { Package, Search, BookOpen, Palette, History, BarChart3, Sparkles, Cloud } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Logo } from '@/components/logo';
 
@@ -37,18 +37,18 @@ export default function Home() {
               专为拼豆爱好者设计
             </div>
 
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
-              拼豆创作者的
+            <h2 className="text-5xl md:text-6xl lg:text-8xl font-bold tracking-tight leading-tight">
+              你的拼豆创作
               <br />
-              <span className="text-primary">
-                完整工具平台
+              <span className="text-primary font-handwritten">
+                工作台
               </span>
             </h2>
 
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              智能库存管理 · 作品记录保存 · 图纸社区探索
+              管理库存 · 发现图纸 · 分享作品
               <br className="hidden sm:block" />
-              一站式解决拼豆创作中的所有需求
+              专为拼豆爱好者打造的一站式创作平台
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
@@ -74,126 +74,269 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Features Section Header */}
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-primary">
-              核心功能
+          {/* Three-Pillar Feature Categories */}
+          <div className="grid md:grid-cols-3 gap-8 mb-20">
+            {/* Pillar 1: Inventory Management */}
+            <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-background hover:shadow-2xl transition-all duration-300">
+              <CardHeader className="text-center pb-6">
+                <div className="mx-auto h-20 w-20 bg-gradient-to-br from-primary to-primary/70 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Package className="h-10 w-10 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-primary font-handwritten">库存管理</CardTitle>
+                <CardDescription className="text-base pt-3">
+                  轻松管理你的拼豆材料库存
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-primary mt-2 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-foreground">657+ 丰富色库</div>
+                    <div className="text-sm text-muted-foreground">支持13个品牌，多种规格</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-primary mt-2 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-foreground">智能搜索</div>
+                    <div className="text-sm text-muted-foreground">快速查找颜色和编号</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-primary mt-2 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-foreground">云端同步</div>
+                    <div className="text-sm text-muted-foreground">多设备实时同步，永不丢失</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pillar 2: Blueprint Library */}
+            <Card className="border-2 border-secondary/30 bg-gradient-to-br from-secondary/5 to-background hover:shadow-2xl transition-all duration-300">
+              <CardHeader className="text-center pb-6">
+                <div className="mx-auto h-20 w-20 bg-gradient-to-br from-secondary to-secondary/70 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <BookOpen className="h-10 w-10 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-secondary font-handwritten">图纸库</CardTitle>
+                <CardDescription className="text-base pt-3">
+                  发现创意，找到你的下一个项目
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-secondary mt-2 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-foreground">浏览图纸</div>
+                    <div className="text-sm text-muted-foreground">探索社区创作的精彩图纸</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-secondary mt-2 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-foreground">创建设计</div>
+                    <div className="text-sm text-muted-foreground">记录和分享你自己的图纸</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-secondary mt-2 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-foreground">颗粒计算</div>
+                    <div className="text-sm text-muted-foreground">自动计算所需材料数量</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pillar 3: Work Sharing */}
+            <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/5 to-background hover:shadow-2xl transition-all duration-300">
+              <CardHeader className="text-center pb-6">
+                <div className="mx-auto h-20 w-20 bg-gradient-to-br from-accent to-accent/70 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <History className="h-10 w-10 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-accent-foreground font-handwritten">作品分享</CardTitle>
+                <CardDescription className="text-base pt-3">
+                  记录创作历程，展示你的作品
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-accent mt-2 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-foreground">记录作品</div>
+                    <div className="text-sm text-muted-foreground">保存每件作品的创作细节</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-accent mt-2 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-foreground">照片相册</div>
+                    <div className="text-sm text-muted-foreground">每个作品最多5张照片</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-accent mt-2 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-foreground">创作统计</div>
+                    <div className="text-sm text-muted-foreground">追踪你的创作历程和成就</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Detailed Features Grid */}
+          <div className="text-center mb-12">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 font-handwritten">
+              完整功能一览
             </h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              从库存管理到作品分享，为您的创作提供全方位支持
+              从材料管理到作品展示，全方位支持你的创作
             </p>
           </div>
 
-          {/* Features Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {/* Feature 1 */}
-            <Card className="border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Row 1: Inventory Features */}
+            <Card className="border-2 hover:border-primary/50 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
-                <div className="h-14 w-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Package className="h-7 w-7 text-primary" />
+                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Palette className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">丰富的色库</CardTitle>
-                <CardDescription className="text-base leading-relaxed pt-2">
-                  多达 291 种颜色，可自选多种常用颜色搭配
+                <CardTitle className="text-lg">多品牌支持</CardTitle>
+                <CardDescription className="text-sm leading-relaxed pt-2">
+                  支持MARD、COCO等13个品牌，657种独特颜色
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            {/* Feature 2 */}
-            <Card className="border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
+            <Card className="border-2 hover:border-primary/50 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
-                <div className="h-14 w-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Search className="h-7 w-7 text-primary" />
+                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Search className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">智能库存管理</CardTitle>
-                <CardDescription className="text-base leading-relaxed pt-2">
-                  实时追踪色号库存，快速搜索和筛选，一键增减数量
+                <CardTitle className="text-lg">快速搜索</CardTitle>
+                <CardDescription className="text-sm leading-relaxed pt-2">
+                  按颜色、编号或系列快速查找所需材料
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            {/* Feature 3 */}
-            <Card className="border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
+            <Card className="border-2 hover:border-primary/50 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
-                <div className="h-14 w-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <BookImage className="h-7 w-7 text-primary" />
+                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Cloud className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">作品记录</CardTitle>
-                <CardDescription className="text-base leading-relaxed pt-2">
-                  保存创作历史，记录每件作品的照片、用料和创作时间
+                <CardTitle className="text-lg">实时同步</CardTitle>
+                <CardDescription className="text-sm leading-relaxed pt-2">
+                  云端存储，手机和电脑无缝切换使用
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            {/* Feature 4 */}
-            <Card className="border-2 hover:border-secondary/50 hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-secondary/5 to-background">
+            {/* Row 2: Blueprint Features */}
+            <Card className="border-2 hover:border-secondary/50 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
-                <div className="h-14 w-14 bg-secondary rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg shadow-secondary/30">
-                  <Cloud className="h-7 w-7 text-white" />
+                <div className="h-12 w-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <BookOpen className="h-6 w-6 text-secondary" />
                 </div>
-                <CardTitle className="text-xl">云端同步</CardTitle>
-                <CardDescription className="text-base leading-relaxed pt-2">
-                  数据实时云端保存，多设备无缝同步，永不丢失
+                <CardTitle className="text-lg">图纸浏览</CardTitle>
+                <CardDescription className="text-sm leading-relaxed pt-2">
+                  发现社区分享的各种创意图纸和设计
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            {/* Feature 5 */}
-            <Card className="border-2 hover:border-secondary/50 hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-secondary/5 to-background">
+            <Card className="border-2 hover:border-secondary/50 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
-                <div className="h-14 w-14 bg-secondary rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg shadow-secondary/30">
-                  <Map className="h-7 w-7 text-white" />
+                <div className="h-12 w-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Palette className="h-6 w-6 text-secondary" />
                 </div>
-                <CardTitle className="text-xl">图纸浏览</CardTitle>
-                <CardDescription className="text-base leading-relaxed pt-2">
-                  发现和收藏各种拼豆图纸，获取创作灵感
+                <CardTitle className="text-lg">设计记录</CardTitle>
+                <CardDescription className="text-sm leading-relaxed pt-2">
+                  保存你的原创设计，建立个人图纸库
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            {/* Feature 6 */}
-            <Card className="border-2 hover:border-secondary/50 hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-secondary/5 to-background">
+            <Card className="border-2 hover:border-secondary/50 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
-                <div className="h-14 w-14 bg-secondary rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg shadow-secondary/30">
-                  <Users className="h-7 w-7 text-white" />
+                <div className="h-12 w-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <BarChart3 className="h-6 w-6 text-secondary" />
                 </div>
-                <CardTitle className="text-xl">分享交流</CardTitle>
-                <CardDescription className="text-base leading-relaxed pt-2">
-                  展示您的作品，与其他拼豆爱好者互动交流
+                <CardTitle className="text-lg">材料计算</CardTitle>
+                <CardDescription className="text-sm leading-relaxed pt-2">
+                  自动计算图纸所需的拼豆数量和颜色
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            {/* Row 3: Sharing Features */}
+            <Card className="border-2 hover:border-accent/50 hover:shadow-lg transition-all duration-300 group">
+              <CardHeader>
+                <div className="h-12 w-12 bg-accent/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <History className="h-6 w-6 text-accent-foreground" />
+                </div>
+                <CardTitle className="text-lg">作品档案</CardTitle>
+                <CardDescription className="text-sm leading-relaxed pt-2">
+                  记录完成时间、使用材料和创作心得
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2 hover:border-accent/50 hover:shadow-lg transition-all duration-300 group">
+              <CardHeader>
+                <div className="h-12 w-12 bg-accent/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Package className="h-6 w-6 text-accent-foreground" />
+                </div>
+                <CardTitle className="text-lg">多图展示</CardTitle>
+                <CardDescription className="text-sm leading-relaxed pt-2">
+                  每个作品支持上传最多5张不同角度照片
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2 hover:border-accent/50 hover:shadow-lg transition-all duration-300 group">
+              <CardHeader>
+                <div className="h-12 w-12 bg-accent/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <BarChart3 className="h-6 w-6 text-accent-foreground" />
+                </div>
+                <CardTitle className="text-lg">创作统计</CardTitle>
+                <CardDescription className="text-sm leading-relaxed pt-2">
+                  追踪完成数量、使用颜色和创作趋势
                 </CardDescription>
               </CardHeader>
             </Card>
           </div>
 
           {/* CTA Section */}
-          <div className="mt-32 text-center">
-            <Card className="border-2 border-primary/20 bg-gradient-to-br from-accent/50 via-muted/30 to-background shadow-xl">
+          <div className="mt-24 text-center">
+            <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-background to-secondary/5 shadow-2xl">
               <CardContent className="py-16 px-8">
-                <h3 className="text-3xl md:text-4xl font-bold mb-5 text-primary">
-                  开启您的拼豆创作之旅
+                <h3 className="text-3xl md:text-4xl font-bold mb-5 font-handwritten">
+                  开启你的拼豆创作之旅
                 </h3>
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-                  一站式拼豆工具平台，完全免费、无广告、注重隐私。
+                  完全免费的一站式拼豆工具平台，无广告干扰，注重隐私保护。
                   <br className="hidden sm:block" />
-                  管理库存、记录作品、发现灵感，让创作更加轻松愉快。
+                  管理库存、发现图纸、分享作品，让创作更加轻松愉快。
                 </p>
                 <div className="flex flex-col items-center justify-center gap-5">
-                  <Button size="lg" className="text-lg px-12 h-14 shadow-lg hover:shadow-xl transition-shadow" asChild>
+                  <Button size="lg" className="text-lg px-12 h-14 shadow-lg hover:shadow-xl transition-all" asChild>
                     <Link href="/signup">
-                      立即免费注册
+                      免费开始使用
                     </Link>
                   </Button>
                   <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
-                    <span className="flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full">
-                      <span className="text-secondary font-bold">✓</span>
+                    <span className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
+                      <span className="text-primary font-bold text-base">✓</span>
                       <span className="text-foreground font-medium">永久免费</span>
                     </span>
-                    <span className="flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full">
-                      <span className="text-secondary font-bold">✓</span>
+                    <span className="flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full border border-secondary/20">
+                      <span className="text-secondary font-bold text-base">✓</span>
                       <span className="text-foreground font-medium">无广告</span>
                     </span>
-                    <span className="flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full">
-                      <span className="text-secondary font-bold">✓</span>
+                    <span className="flex items-center gap-2 px-3 py-1.5 bg-accent/10 rounded-full border border-accent/20">
+                      <span className="text-accent-foreground font-bold text-base">✓</span>
                       <span className="text-foreground font-medium">隐私安全</span>
                     </span>
                   </div>

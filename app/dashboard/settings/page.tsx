@@ -49,7 +49,8 @@ export default function SettingsPage() {
     setSaving(true);
 
     try {
-      const response = await fetch('/api/user/profile', {
+      // Update profile
+      const profileResponse = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -60,8 +61,8 @@ export default function SettingsPage() {
         }),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
+      if (!profileResponse.ok) {
+        const data = await profileResponse.json();
         throw new Error(data.error || 'Failed to update profile');
       }
 
@@ -73,12 +74,12 @@ export default function SettingsPage() {
         },
       });
 
-      toast.success('个人信息已更新');
+      toast.success('设置已更新');
 
       // Refresh the page to update header avatar
       router.refresh();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : '无法更新个人信息');
+      toast.error(error instanceof Error ? error.message : '无法更新设置');
     } finally {
       setSaving(false);
     }

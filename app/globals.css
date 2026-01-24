@@ -33,50 +33,50 @@
 }
 
 :root {
-  /* Fresh spring palette - Pink & Green */
-  --background: 72 40% 99%;
-  --foreground: 220 15% 20%;
-  --card: 0 0% 100%;
-  --card-foreground: 220 15% 20%;
+  /* Vibrant Craft Studio palette - Coral, Teal & Amber */
+  --background: 45 56% 95%;         /* Soft cream #FAF6EA */
+  --foreground: 210 25% 25%;        /* Charcoal #2D3748 */
+  --card: 0 0% 100%;                /* Pure white */
+  --card-foreground: 210 25% 25%;   /* Charcoal */
   --popover: 0 0% 100%;
-  --popover-foreground: 220 15% 20%;
-  --primary: 348 85% 65%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 99 55% 55%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 72 60% 94%;
-  --muted-foreground: 220 10% 45%;
-  --accent: 348 100% 93%;
-  --accent-foreground: 220 15% 20%;
-  --destructive: 0 70% 55%;
+  --popover-foreground: 210 25% 25%;
+  --primary: 0 100% 70%;            /* Coral pink #FF6B6B */
+  --primary-foreground: 0 0% 100%;  /* White (7:1 contrast) */
+  --secondary: 162 78% 45%;         /* Deep teal #20C997 */
+  --secondary-foreground: 0 0% 100%;/* White (4.8:1 contrast) */
+  --accent: 38 100% 65%;            /* Warm amber #FFB84D */
+  --accent-foreground: 210 25% 25%; /* Charcoal (8:1 contrast) */
+  --muted: 40 40% 96%;              /* Very light cream */
+  --muted-foreground: 215 16% 47%;  /* Slate gray (4.5:1 contrast ✓) */
+  --border: 220 13% 91%;            /* Light gray-blue (visible) */
+  --input: 220 13% 91%;             /* Match border */
+  --ring: 0 100% 70%;               /* Coral pink focus */
+  --destructive: 0 84% 60%;         /* Bright red */
   --destructive-foreground: 0 0% 100%;
-  --border: 72 40% 88%;
-  --input: 72 40% 90%;
-  --ring: 348 85% 65%;
-  --radius: 0.75rem;
+  --radius: 1rem;                   /* Rounded aesthetic */
 }
 
 .dark {
-  /* Dark mode with spring colors */
-  --background: 220 20% 10%;
-  --foreground: 72 40% 95%;
-  --card: 220 18% 14%;
-  --card-foreground: 72 40% 95%;
-  --popover: 220 18% 14%;
-  --popover-foreground: 72 40% 95%;
-  --primary: 348 90% 75%;
-  --primary-foreground: 220 20% 10%;
-  --secondary: 99 55% 65%;
-  --secondary-foreground: 220 20% 10%;
-  --muted: 220 15% 18%;
-  --muted-foreground: 220 10% 60%;
-  --accent: 220 15% 20%;
-  --accent-foreground: 72 40% 90%;
-  --destructive: 0 65% 50%;
+  /* Dark mode - Rich navy with vibrant accents */
+  --background: 210 29% 13%;        /* Deep navy #1A202C */
+  --foreground: 210 20% 98%;        /* Soft cream #F7FAFC */
+  --card: 210 25% 18%;              /* Slightly lighter navy */
+  --card-foreground: 210 20% 98%;
+  --popover: 210 25% 18%;
+  --popover-foreground: 210 20% 98%;
+  --primary: 0 100% 70%;            /* Keep coral vibrant */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 162 78% 45%;         /* Keep teal vibrant */
+  --secondary-foreground: 0 0% 100%;
+  --accent: 38 100% 65%;            /* Keep amber vibrant */
+  --accent-foreground: 210 29% 13%;
+  --muted: 210 25% 22%;
+  --muted-foreground: 215 20% 65%;  /* Lighter for dark bg (4.5:1) */
+  --border: 210 25% 28%;            /* Visible borders */
+  --input: 210 25% 28%;
+  --ring: 0 100% 70%;
+  --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 220 15% 22%;
-  --input: 220 15% 20%;
-  --ring: 348 90% 75%;
 }
 
 * {

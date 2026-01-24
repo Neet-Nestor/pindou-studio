@@ -9,12 +9,14 @@ interface ColorCardProps {
     id: string;
     quantity: number;
     customColor: boolean;
+    brand: string;
     color: {
       id: string;
       code: string;
       hexColor: string;
+      brand?: string;
     } | null;
-    customization: {
+    customization?: {
       id: string;
       customCode: string | null;
       customHexColor: string | null;
@@ -24,9 +26,10 @@ interface ColorCardProps {
   };
   onQuantityUpdate: (itemId: string, newQuantity: number) => void;
   onHideColor: (colorCode: string) => void;
+  showBrand?: boolean;
 }
 
-export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
+export default function ColorCard({ item, onQuantityUpdate, showBrand = false }: ColorCardProps) {
   const [showQuantityDialog, setShowQuantityDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [localQuantity, setLocalQuantity] = useState(item.quantity);
@@ -114,6 +117,13 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
           className="w-full aspect-square relative"
           style={{ backgroundColor: displayHexColor }}
         >
+          {/* Brand badge - only show in multi-brand mode */}
+          {showBrand && (
+            <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded text-[10px] font-medium text-white">
+              {item.brand}
+            </div>
+          )}
+
           {/* Status indicator */}
           {isOutOfStock && (
             <div className="absolute top-0.5 right-0.5 md:top-1 md:right-1 w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500 border-2 border-white shadow-md" />
@@ -131,8 +141,12 @@ export default function ColorCard({ item, onQuantityUpdate }: ColorCardProps) {
           </div>
 
           {/* Quantity - large and prominent */}
-          <div className="font-bold text-2xl md:text-3xl text-center text-primary transition-colors group-hover:text-primary/80">
-            {localQuantity}
+          <div className={`font-bold text-2xl md:text-3xl text-center transition-colors ${
+            localQuantity === 0
+              ? 'text-muted-foreground/50 group-hover:text-muted-foreground/70'
+              : 'text-primary group-hover:text-primary/80'
+          }`}>
+            {localQuantity === 0 ? '—' : localQuantity}
           </div>
 
           {/* Notes (if any) - shown on desktop only */}

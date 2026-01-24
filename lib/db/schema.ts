@@ -39,7 +39,9 @@ export const userColorCustomizations = pgTable('user_color_customizations', {
 export const userInventory = pgTable('user_inventory', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
-  colorId: uuid('color_id').references(() => colors.id, { onDelete: 'cascade' }).notNull(),
+  colorId: uuid('color_id').references(() => colors.id, { onDelete: 'cascade' }), // Nullable for multi-brand items
+  hexColor: text('hex_color'), // Direct hex reference for multi-brand system
+  brand: text('brand').notNull(), // Brand identifier
   quantity: integer('quantity').default(0).notNull(),
   customColor: boolean('custom_color').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -50,7 +52,7 @@ export const userInventory = pgTable('user_inventory', {
 export const inventoryHistory = pgTable('inventory_history', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
-  colorId: uuid('color_id').references(() => colors.id, { onDelete: 'cascade' }).notNull(),
+  colorId: uuid('color_id').references(() => colors.id, { onDelete: 'cascade' }), // Nullable for multi-brand items
   changeAmount: integer('change_amount').notNull(),
   previousQuantity: integer('previous_quantity').notNull(),
   newQuantity: integer('new_quantity').notNull(),
@@ -65,6 +67,37 @@ export const userHiddenColors = pgTable('user_hidden_colors', {
   family: text('family'), // e.g., 'A', 'B', 'ZG' - when set without colorCode, hides entire family
   colorCode: text('color_code'), // e.g., 'A5', 'B12' - when set, hides specific color
   createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// User settings table - stores user preferences including primary brand
+export const userSettings = pgTable('user_settings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull().unique(),
+  primaryBrand: text('primary_brand').default('MARD').notNull(),
+  multiBrandEnabled: boolean('multi_brand_enabled').default(false).notNull(),
+  enabledBrands: text('enabled_brands').default('[]').notNull(), // JSON array of brand IDs
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Brand catalog table - stores all available bead brands
+export const brandCatalog = pgTable('brand_catalog', {
+  id: text('id').primaryKey(), // e.g., 'MARD', 'HAMA', 'PERLER'
+  name: text('name').notNull(), // Display name
+  region: text('region').notNull(), // 'chinese' | 'international'
+  sizes: text('sizes').notNull(), // e.g., '2.6mm, 5mm'
+  description: text('description'),
+  website: text('website'),
+  displayOrder: integer('display_order').default(0).notNull(),
+});
+
+// Color catalog table - stores all brand-color-code mappings
+export const colorCatalog = pgTable('color_catalog', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  hexColor: text('hex_color').notNull(), // Universal color identifier
+  brand: text('brand').references(() => brandCatalog.id).notNull(),
+  code: text('code').notNull(), // Brand-specific code (e.g., 'A5', '01', 'P01')
+  category: text('category'), // Optional grouping (e.g., 'standard', 'glow', 'striped')
 });
 
 // Blueprints table - stores bead blueprints (user private + official public)
@@ -98,7 +131,7 @@ export const buildHistory = pgTable('build_history', {
 });
 
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   inventory: many(userInventory),
   history: many(inventoryHistory),
   customColors: many(colors),
@@ -106,6 +139,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   hiddenColors: many(userHiddenColors),
   blueprints: many(blueprints),
   builds: many(buildHistory),
+  settings: one(userSettings),
 }));
 
 export const colorsRelations = relations(colors, ({ one, many }) => ({
@@ -177,6 +211,24 @@ export const buildHistoryRelations = relations(buildHistory, ({ one }) => ({
   }),
 }));
 
+export const userSettingsRelations = relations(userSettings, ({ one }) => ({
+  user: one(users, {
+    fields: [userSettings.userId],
+    references: [users.id],
+  }),
+}));
+
+export const brandCatalogRelations = relations(brandCatalog, ({ many }) => ({
+  colors: many(colorCatalog),
+}));
+
+export const colorCatalogRelations = relations(colorCatalog, ({ one }) => ({
+  brand: one(brandCatalog, {
+    fields: [colorCatalog.brand],
+    references: [brandCatalog.id],
+  }),
+}));
+
 // Types for TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -201,3 +253,12 @@ export type NewBlueprint = typeof blueprints.$inferInsert;
 
 export type BuildHistory = typeof buildHistory.$inferSelect;
 export type NewBuildHistory = typeof buildHistory.$inferInsert;
+
+export type UserSettings = typeof userSettings.$inferSelect;
+export type NewUserSettings = typeof userSettings.$inferInsert;
+
+export type BrandCatalog = typeof brandCatalog.$inferSelect;
+export type NewBrandCatalog = typeof brandCatalog.$inferInsert;
+
+export type ColorCatalog = typeof colorCatalog.$inferSelect;
+export type NewColorCatalog = typeof colorCatalog.$inferInsert;

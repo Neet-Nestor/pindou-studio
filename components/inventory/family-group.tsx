@@ -10,12 +10,14 @@ interface InventoryItem {
   quantity: number;
   customColor: boolean;
   updatedAt: Date | null;
+  brand: string;
   color: {
     id: string;
     code: string;
     hexColor: string;
+    brand?: string;
   } | null;
-  customization: {
+  customization?: {
     id: string;
     customCode: string | null;
     customHexColor: string | null;
@@ -31,6 +33,7 @@ interface FamilyGroupProps {
   onHideColor: (colorCode: string) => void;
   isHidden: boolean;
   onToggleHidden: (family: string) => void;
+  showBrand?: boolean;
 }
 
 export default function FamilyGroup({
@@ -40,6 +43,7 @@ export default function FamilyGroup({
   onHideColor,
   isHidden,
   onToggleHidden,
+  showBrand = false,
 }: FamilyGroupProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -106,6 +110,7 @@ export default function FamilyGroup({
               item={item}
               onQuantityUpdate={onQuantityUpdate}
               onHideColor={onHideColor}
+              showBrand={showBrand}
             />
           ))}
         </div>

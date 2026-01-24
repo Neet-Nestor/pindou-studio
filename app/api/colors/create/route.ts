@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { colors, userInventory } from '@/lib/db/schema';
+import { colors, userInventory, userSettings } from '@/lib/db/schema';
 import { auth } from '@/lib/auth';
 import { z } from 'zod';
+import { eq } from 'drizzle-orm';
 
 const createColorSchema = z.object({
   code: z.string().min(1, 'Color code is required'),
@@ -26,6 +27,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = createColorSchema.parse(body);
 
+    // Get user's brand settings
+    const settings = await db.query.userSettings.findFirst({
+      where: eq(userSettings.userId, session.user.id),
+    });
+    const primaryBrand = settings?.primaryBrand || 'MARD';
+
     // Create the custom color (belongs to user)
     const [newColor] = await db
       .insert(colors)
@@ -40,6 +47,8 @@ export async function POST(request: Request) {
     await db.insert(userInventory).values({
       userId: session.user.id,
       colorId: newColor.id,
+      hexColor: validatedData.hexColor,
+      brand: primaryBrand,
       quantity: parseInt(validatedData.initialQuantity || '0'),
       customColor: true,
     });

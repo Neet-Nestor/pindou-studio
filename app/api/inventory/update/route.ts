@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { userInventory, inventoryHistory } from '@/lib/db/schema';
+import { userInventory, inventoryHistory, colors, userSettings } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 
@@ -15,7 +15,7 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const { inventoryId, colorId, quantity, reason } = await request.json();
+    const { inventoryId, colorId, hexColor, brand, quantity, reason } = await request.json();
 
     if (typeof quantity !== 'number' || quantity < 0) {
       return NextResponse.json(
@@ -33,9 +33,38 @@ export async function PATCH(request: Request) {
 
     if (isNewItem) {
       // Create new inventory record for this color
-      if (!colorId) {
+      if (!colorId && !hexColor) {
         return NextResponse.json(
-          { message: 'Color ID required for new inventory item' },
+          { message: 'Color ID or hex color required for new inventory item' },
+          { status: 400 }
+        );
+      }
+
+      // Get user's primary brand if brand not specified
+      let actualBrand = brand;
+      let actualHexColor = hexColor;
+
+      if (!actualBrand || !actualHexColor) {
+        const settings = await db.query.userSettings.findFirst({
+          where: eq(userSettings.userId, session.user.id),
+        });
+
+        if (!actualBrand) {
+          actualBrand = settings?.primaryBrand || 'MARD';
+        }
+
+        // If hexColor not provided, get it from colors table via colorId
+        if (!actualHexColor && colorId) {
+          const color = await db.query.colors.findFirst({
+            where: eq(colors.id, colorId),
+          });
+          actualHexColor = color?.hexColor;
+        }
+      }
+
+      if (!actualHexColor || !actualBrand) {
+        return NextResponse.json(
+          { message: 'Could not determine color hex or brand' },
           { status: 400 }
         );
       }
@@ -45,6 +74,8 @@ export async function PATCH(request: Request) {
         .values({
           userId: session.user.id,
           colorId,
+          hexColor: actualHexColor,
+          brand: actualBrand,
           quantity,
           customColor: false,
         })

@@ -10,12 +10,8 @@ interface StatsCardProps {
 
 export function StatsCard({ title, value, icon: Icon, description }: StatsCardProps) {
   return (
-    <Card className="relative overflow-hidden border-2 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 bg-gradient-to-br from-card to-card/50 group">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
-      <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-secondary/5 rounded-full blur-2xl group-hover:bg-secondary/10 transition-colors" />
-
-      <div className="relative p-6">
+    <Card className="relative overflow-hidden border-2 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group">
+      <div className="p-6">
         <div className="flex items-start justify-between space-x-4">
           <div className="flex-1 space-y-2">
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">

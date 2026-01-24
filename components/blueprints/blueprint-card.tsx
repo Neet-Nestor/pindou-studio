@@ -12,17 +12,17 @@ interface BlueprintCardProps {
 
 const difficultyConfig = {
   easy: {
-    color: 'bg-emerald-500 text-white',
+    color: 'bg-secondary text-white',
     label: '简单',
     icon: '✨',
   },
   medium: {
-    color: 'bg-amber-500 text-white',
+    color: 'bg-accent text-accent-foreground',
     label: '中等',
     icon: '⚡',
   },
   hard: {
-    color: 'bg-rose-500 text-white',
+    color: 'bg-primary text-white',
     label: '困难',
     icon: '🔥',
   },

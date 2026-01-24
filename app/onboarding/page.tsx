@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { userInventory } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import OnboardingForm from '@/components/onboarding/onboarding-form';
+import OnboardingFormNew from '@/components/onboarding/onboarding-form-new';
 
 export default async function OnboardingPage() {
   const session = await auth();
@@ -21,8 +21,8 @@ export default async function OnboardingPage() {
 
   // If user already has inventory, redirect to inventory page
   if (existingInventory.length > 0) {
-    redirect('/inventory');
+    redirect('/dashboard/inventory');
   }
 
-  return <OnboardingForm />;
+  return <OnboardingFormNew />;
 }

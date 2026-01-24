@@ -1,0 +1,1 @@
+ALTER TABLE "user_settings" ADD COLUMN "enabled_brands" text DEFAULT '[]' NOT NULL;

@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Search, Download, Upload, Plus, List, LayoutGrid, RotateCcw, Eye } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Search, Download, Upload, Plus, List, LayoutGrid, RotateCcw, Eye, ChevronDown } from 'lucide-react';
 import AddCustomColorDialog from './add-custom-color-dialog';
 import FamilyGroup from './family-group';
 import ColorCard from './color-card';
@@ -18,12 +19,14 @@ interface InventoryItem {
   quantity: number;
   customColor: boolean;
   updatedAt: Date | null;
+  brand: string;
   color: {
     id: string;
     code: string;
     hexColor: string;
+    brand?: string;
   } | null;
-  customization: {
+  customization?: {
     id: string;
     customCode: string | null;
     customHexColor: string | null;
@@ -36,10 +39,36 @@ interface InventoryGridProps {
   inventory: InventoryItem[];
   initialHiddenFamilies?: string[];
   initialHiddenColors?: string[];
+  brandSettings?: {
+    primaryBrand: string;
+    multiBrandEnabled: boolean;
+  };
 }
+
+// Brand popularity order (most popular first)
+const brandPopularityOrder: Record<string, number> = {
+  'MARD': 1,
+  'COCO': 2,
+  '漫漫': 3,
+  '盼盼': 4,
+  '咪小窝': 5,
+  'HAMA': 6,
+  'PERLER': 7,
+  'ARTKAL_R': 8,
+  'ARTKAL_S': 9,
+  'ARTKAL_C': 10,
+  'NABBI': 11,
+  'PYSSLA': 12,
+  'PHOTO_PEARLS': 13,
+};
 
 // Helper function to extract family from color code
 function extractFamily(code: string): string {
+  // Check if it's a pure number (e.g., "1", "10", "205")
+  if (/^\d+$/.test(code)) {
+    return '数字系列'; // Numeric series
+  }
+
   // Match patterns like "ZG1", "A5", "B12", etc.
   const match = code.match(/^([A-Z]+)/);
   return match ? match[1] : 'Other';
@@ -47,7 +76,19 @@ function extractFamily(code: string): string {
 
 // Helper function for natural/numeric sorting of color codes
 function compareColorCodes(codeA: string, codeB: string): number {
-  // Extract family (letter prefix) and number
+  // Check if both are pure numbers (e.g., "1", "10", "205")
+  const pureNumA = /^\d+$/.test(codeA);
+  const pureNumB = /^\d+$/.test(codeB);
+
+  if (pureNumA && pureNumB) {
+    // Both are pure numbers - compare numerically
+    return parseInt(codeA, 10) - parseInt(codeB, 10);
+  }
+
+  if (pureNumA) return -1; // Pure numbers come before letter codes
+  if (pureNumB) return 1;
+
+  // Extract family (letter prefix) and number (e.g., "A01", "B12")
   const matchA = codeA.match(/^([A-Z]+)(\d+)$/);
   const matchB = codeB.match(/^([A-Z]+)(\d+)$/);
 
@@ -68,15 +109,26 @@ function compareColorCodes(codeA: string, codeB: string): number {
   return numA - numB;
 }
 
+// Helper function to sort brands by popularity
+function sortBrandsByPopularity(brands: string[]): string[] {
+  return brands.sort((a, b) => {
+    const orderA = brandPopularityOrder[a] || 999;
+    const orderB = brandPopularityOrder[b] || 999;
+    return orderA - orderB;
+  });
+}
+
 export default function InventoryGrid({
   inventory: initialInventory,
   initialHiddenFamilies = [],
   initialHiddenColors = [],
+  brandSettings = { primaryBrand: 'MARD', multiBrandEnabled: false },
 }: InventoryGridProps) {
   const router = useRouter();
   const [inventory, setInventory] = useState(initialInventory);
   const [searchQuery, setSearchQuery] = useState('');
   const [stockFilter, setStockFilter] = useState<'all' | 'in-stock' | 'low-stock' | 'out-of-stock'>('all');
+  const [brandFilter, setBrandFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'code' | 'quantity'>('quantity');
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
@@ -84,6 +136,13 @@ export default function InventoryGrid({
   const [hiddenFamilies, setHiddenFamilies] = useState<Set<string>>(new Set(initialHiddenFamilies));
   const [hiddenColors, setHiddenColors] = useState<Set<string>>(new Set(initialHiddenColors));
   const [groupByFamily, setGroupByFamily] = useState(true);
+  const [collapsedBrands, setCollapsedBrands] = useState<Set<string>>(new Set());
+
+  // Get unique brands for filter (sorted by popularity)
+  const uniqueBrands = useMemo(() => {
+    const brands = new Set(inventory.map(item => item.brand));
+    return sortBrandsByPopularity(Array.from(brands));
+  }, [inventory]);
 
   // Sync inventory state when prop changes (after router.refresh())
   useEffect(() => {
@@ -112,7 +171,7 @@ export default function InventoryGrid({
     };
   }, [inventory, hiddenColors, hiddenFamilies]);
 
-  // Filter, sort, and optionally group inventory by family
+  // Filter, sort, and optionally group inventory by brand and/or family
   const groupedInventory = useMemo(() => {
     const filtered = inventory.filter((item) => {
       if (!item.color) return false;
@@ -135,7 +194,10 @@ export default function InventoryGrid({
         (stockFilter === 'low-stock' && item.quantity > 0 && item.quantity <= 10) ||
         (stockFilter === 'out-of-stock' && item.quantity === 0);
 
-      return matchesSearch && matchesStock;
+      const matchesBrand =
+        brandFilter === 'all' || item.brand === brandFilter;
+
+      return matchesSearch && matchesStock && matchesBrand;
     });
 
     // Sort items
@@ -154,13 +216,47 @@ export default function InventoryGrid({
     if (!groupByFamily) {
       // Return ungrouped view - all items in a single "all" group
       return {
+        brands: [],
         families: ['all'],
         items: new Map([['all', filtered]]),
         totalCount: filtered.length,
+        groupedByBrand: false,
       };
     }
 
-    // Group by family
+    // Multi-brand mode: Group by brand first, then by family within each brand
+    if (brandSettings.multiBrandEnabled && uniqueBrands.length > 1) {
+      const brandGroups = new Map<string, Map<string, typeof filtered>>();
+
+      // Group by brand and family
+      filtered.forEach((item) => {
+        if (!item.color) return;
+        const brand = item.brand;
+        const family = extractFamily(item.color.code);
+
+        if (!brandGroups.has(brand)) {
+          brandGroups.set(brand, new Map());
+        }
+        const familyMap = brandGroups.get(brand)!;
+        if (!familyMap.has(family)) {
+          familyMap.set(family, []);
+        }
+        familyMap.get(family)?.push(item);
+      });
+
+      // Sort brands by popularity
+      const brandsInOrder = sortBrandsByPopularity(Array.from(brandGroups.keys()));
+
+      return {
+        brands: brandsInOrder,
+        families: [],
+        items: brandGroups,
+        totalCount: filtered.length,
+        groupedByBrand: true,
+      };
+    }
+
+    // Single-brand mode or no grouping: Group by family only
     const grouped = new Map<string, typeof filtered>();
     filtered.forEach((item) => {
       if (!item.color) return;
@@ -187,11 +283,13 @@ export default function InventoryGrid({
     const allFamilies = familiesWithTotals.map(({ family }) => family);
 
     return {
+      brands: [],
       families: allFamilies,
       items: grouped,
       totalCount: filtered.length,
+      groupedByBrand: false,
     };
-  }, [inventory, searchQuery, stockFilter, sortBy, hiddenColors, hiddenFamilies, groupByFamily]);
+  }, [inventory, searchQuery, stockFilter, brandFilter, sortBy, hiddenColors, hiddenFamilies, groupByFamily, brandSettings, uniqueBrands]);
 
   const handleQuantityUpdate = (itemId: string, newQuantity: number) => {
     setInventory((prev) =>
@@ -374,6 +472,21 @@ export default function InventoryGrid({
           </SelectContent>
         </Select>
 
+        {/* Brand Filter - only show in multi-brand mode */}
+        {brandSettings.multiBrandEnabled && uniqueBrands.length > 1 && (
+          <Select value={brandFilter} onValueChange={setBrandFilter}>
+            <SelectTrigger className="w-full md:w-[120px] h-9 text-xs">
+              <SelectValue placeholder="品牌" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all" className="text-xs">全部品牌</SelectItem>
+              {uniqueBrands.map(brand => (
+                <SelectItem key={brand} value={brand} className="text-xs">{brand}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
         <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'code' | 'quantity')}>
           <SelectTrigger className="w-full md:w-[120px] h-9 text-xs">
             <SelectValue />
@@ -486,20 +599,100 @@ export default function InventoryGrid({
       {!groupByFamily ? (
         // Ungrouped view - flat grid, very dense layout
         <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-1.5 md:gap-2">
-          {groupedInventory.items.get('all')?.map((item) => (
+          {(groupedInventory.items.get('all') as InventoryItem[] | undefined)?.map((item) => (
             <ColorCard
               key={item.id}
               item={item}
               onQuantityUpdate={handleQuantityUpdate}
               onHideColor={handleHideColor}
+              showBrand={brandSettings.multiBrandEnabled}
             />
           ))}
         </div>
+      ) : groupedInventory.groupedByBrand ? (
+        // Multi-brand grouped view - by brand, then by family
+        <div className="space-y-4">
+          {groupedInventory.brands.map((brand) => {
+            const familyMap = groupedInventory.items.get(brand) as Map<string, typeof inventory>;
+            const allBrandItems = Array.from(familyMap.values()).flat();
+            const totalQuantity = allBrandItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            const isOpen = !collapsedBrands.has(brand);
+
+            // Sort families by total quantity within each brand
+            const familiesWithTotals = Array.from(familyMap.entries()).map(([family, items]) => ({
+              family,
+              totalQuantity: items.reduce((sum, item) => sum + (item.quantity || 0), 0),
+            }));
+
+            familiesWithTotals.sort((a, b) => {
+              const qtyDiff = b.totalQuantity - a.totalQuantity;
+              if (qtyDiff !== 0) return qtyDiff;
+              return a.family.localeCompare(b.family);
+            });
+
+            return (
+              <Collapsible
+                key={brand}
+                open={isOpen}
+                onOpenChange={(open) => {
+                  setCollapsedBrands((prev) => {
+                    const newSet = new Set(prev);
+                    if (open) {
+                      newSet.delete(brand);
+                    } else {
+                      newSet.add(brand);
+                    }
+                    return newSet;
+                  });
+                }}
+                className="space-y-4 border rounded-lg p-4"
+              >
+                {/* Brand header - now clickable */}
+                <CollapsibleTrigger className="w-full group cursor-pointer">
+                  <div className="flex items-center justify-between hover:opacity-80 transition-opacity">
+                    <div className="flex items-center gap-3">
+                      <ChevronDown
+                        className={`h-5 w-5 text-muted-foreground transition-transform ${
+                          isOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                      <h2 className="text-2xl font-bold font-handwritten text-primary">
+                        {brand}
+                      </h2>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {allBrandItems.length} 种颜色 · 总量 {totalQuantity}
+                    </div>
+                  </div>
+                </CollapsibleTrigger>
+
+                {/* Families within this brand */}
+                <CollapsibleContent className="space-y-4 pl-4">
+                  {familiesWithTotals.map(({ family }) => {
+                    const items = familyMap.get(family) || [];
+                    return (
+                      <FamilyGroup
+                        key={`${brand}-${family}`}
+                        family={family}
+                        items={items}
+                        onQuantityUpdate={handleQuantityUpdate}
+                        onHideColor={handleHideColor}
+                        isHidden={hiddenFamilies.has(family)}
+                        onToggleHidden={handleToggleHidden}
+                        showBrand={false}
+                      />
+                    );
+                  })}
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })}
+        </div>
       ) : (
-        // Grouped view - by family
+        // Single-brand grouped view - by family only
         <div className="space-y-4">
           {groupedInventory.families.map((family) => {
-            const items = groupedInventory.items.get(family) || [];
+            const items = (groupedInventory.items.get(family) as InventoryItem[] | undefined) || [];
             return (
               <FamilyGroup
                 key={family}
@@ -509,6 +702,7 @@ export default function InventoryGrid({
                 onHideColor={handleHideColor}
                 isHidden={hiddenFamilies.has(family)}
                 onToggleHidden={handleToggleHidden}
+                showBrand={brandSettings.multiBrandEnabled}
               />
             );
           })}
