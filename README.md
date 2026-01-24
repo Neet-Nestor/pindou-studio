@@ -1,4 +1,4 @@
-# 拼豆Studio
+# 拼豆工坊 (Perler Beads Studio)
 
 专业的拼豆库存管理工具，支持数据库同步和云端备份。
 
@@ -196,7 +196,7 @@ git push origin main
    - Go to "Settings" → "Environment Variables"
    - Add the following variables:
      ```
-     NEXTAUTH_URL = https://your-app.vercel.app
+     NEXTAUTH_URL = https://pindou.neet.coffee
      NEXTAUTH_SECRET = (generate with: openssl rand -base64 32)
      ```
 
@@ -204,7 +204,7 @@ git push origin main
 
 1. Click "Deploy" in your Vercel project
 2. Wait for the build to complete (usually 2-3 minutes)
-3. Your app will be live at `https://your-app.vercel.app`
+3. Your app will be live at `https://pindou.neet.coffee`
 
 ### 5. Initialize Production Database
 
@@ -233,7 +233,7 @@ npm run db:seed
 
 ### 6. Verify Deployment
 
-1. Visit your deployed site: `https://your-app.vercel.app`
+1. Visit your deployed site: `https://pindou.neet.coffee`
 2. Create a new account
 3. Go to onboarding and select color sets
 4. Verify inventory loads correctly

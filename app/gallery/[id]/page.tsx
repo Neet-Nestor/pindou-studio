@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { Metadata } from 'next';
 import { db } from '@/lib/db';
 import { buildHistory, users, blueprints } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -13,6 +14,62 @@ interface PublicBuildPageProps {
   params: Promise<{
     id: string;
   }>;
+}
+
+export async function generateMetadata({ params }: PublicBuildPageProps): Promise<Metadata> {
+  const { id } = await params;
+
+  const [result] = await db
+    .select({
+      build: buildHistory,
+      user: {
+        name: users.name,
+      },
+    })
+    .from(buildHistory)
+    .leftJoin(users, eq(buildHistory.userId, users.id))
+    .where(
+      and(
+        eq(buildHistory.id, id),
+        eq(buildHistory.isPublic, true)
+      )
+    );
+
+  if (!result) {
+    return {
+      title: '作品未找到',
+    };
+  }
+
+  const { build, user } = result;
+  const images = build.imageUrls ? JSON.parse(build.imageUrls) : [];
+  const firstImage = images[0];
+
+  return {
+    title: build.title,
+    description: build.description || `由 ${user?.name || '用户'} 创作的拼豆作品`,
+    openGraph: {
+      title: build.title,
+      description: build.description || `由 ${user?.name || '用户'} 创作的拼豆作品`,
+      type: 'article',
+      publishedTime: build.createdAt.toISOString(),
+      authors: user?.name ? [user.name] : [],
+      images: firstImage ? [
+        {
+          url: firstImage,
+          width: 1200,
+          height: 630,
+          alt: build.title,
+        }
+      ] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: build.title,
+      description: build.description || `由 ${user?.name || '用户'} 创作的拼豆作品`,
+      images: firstImage ? [firstImage] : [],
+    },
+  };
 }
 
 export default async function PublicBuildPage({ params }: PublicBuildPageProps) {

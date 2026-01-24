@@ -1,12 +1,49 @@
 import Link from 'next/link';
+import { Metadata } from 'next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, Search, BookOpen, Palette, History, BarChart3, Sparkles, Cloud } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Logo } from '@/components/logo';
+import { StructuredData } from '@/components/seo/structured-data';
+
+export const metadata: Metadata = {
+  title: '首页',
+  description: '拼豆工坊 - 专为拼豆爱好者打造的一站式创作平台。管理库存、发现图纸、记录作品，支持MARD、COCO、Hama、Perler等多品牌。',
+};
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '拼豆工坊',
+  alternateName: 'Perler Beads Studio',
+  url: process.env.NEXTAUTH_URL || 'https://pindou.neet.coffee',
+  description: '管理拼豆库存，发现创意图纸，分享精彩作品。专为拼豆爱好者打造的一站式创作平台。',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Web',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'CNY',
+  },
+  featureList: [
+    '多品牌库存管理',
+    '在线图纸库',
+    '作品分享',
+    '云端同步',
+    '数据导入导出',
+  ],
+  inLanguage: 'zh-CN',
+  author: {
+    '@type': 'Person',
+    name: 'Neet-Nestor',
+  },
+};
 
 export default function Home() {
   return (
+    <>
+      <StructuredData data={structuredData} />
     <div className="flex min-h-screen flex-col">
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -347,5 +384,6 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </>
   );
 }

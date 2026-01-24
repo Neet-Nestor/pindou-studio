@@ -40,7 +40,7 @@ export function Logo({ href = '/', size = 'md', className, showText = true, show
       {showIcon && (
         <Image
           src="/icon.png"
-          alt="拼豆Studio"
+          alt="拼豆工坊"
           width={config.icon.width}
           height={config.icon.height}
           className={cn(config.icon.className, 'flex-shrink-0 translate-y-0.25')}
@@ -48,7 +48,7 @@ export function Logo({ href = '/', size = 'md', className, showText = true, show
       )}
       {showText && (
         <span className={cn(config.text, 'font-handwritten text-primary leading-none whitespace-nowrap')}>
-          拼豆 Studio
+          拼豆工坊
         </span>
       )}
     </Link>

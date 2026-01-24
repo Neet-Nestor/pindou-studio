@@ -16,11 +16,49 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "拼豆Studio - 创作工作台",
-  description: "管理拼豆库存，发现创意图纸，分享精彩作品。专为拼豆爱好者打造的一站式创作平台。",
+  metadataBase: new URL(process.env.NEXTAUTH_URL || 'http://localhost:3000'),
+  title: {
+    default: '拼豆工坊 - Perler Beads Studio',
+    template: '%s | 拼豆工坊'
+  },
+  description: '管理拼豆库存，发现创意图纸，分享精彩作品。专为拼豆爱好者打造的一站式创作平台。支持多品牌（MARD、COCO、Hama、Perler等），云端同步，在线图纸库。',
+  keywords: ['拼豆', 'perler beads', '拼豆图纸', '库存管理', 'MARD', 'COCO', 'Hama', 'Perler', '拼拼豆豆', '手工', 'DIY', '拼豆工坊'],
+  authors: [{ name: 'Neet-Nestor' }],
+  creator: 'Neet-Nestor',
+  publisher: '拼豆工坊',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    title: '拼豆工坊 - Perler Beads Studio',
+    description: '管理拼豆库存，发现创意图纸，分享精彩作品。专为拼豆爱好者打造的一站式创作平台。',
+    url: '/',
+    siteName: '拼豆工坊',
+    locale: 'zh_CN',
+    type: 'website',
+    images: [
+      {
+        url: '/icon.png',
+        width: 512,
+        height: 512,
+        alt: '拼豆工坊 Logo',
+      }
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '拼豆工坊 - Perler Beads Studio',
+    description: '管理拼豆库存，发现创意图纸，分享精彩作品。专为拼豆爱好者打造的一站式创作平台。',
+    images: ['/icon.png'],
+  },
   icons: {
     icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
   },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({

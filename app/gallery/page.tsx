@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Metadata } from 'next';
 import { db } from '@/lib/db';
 import { buildHistory, users } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -7,9 +8,14 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { PublicBuildCard } from '@/components/history/public-build-card';
 
-export const metadata = {
-  title: '作品展示 - 拼豆Studio',
-  description: '探索来自社区的精彩拼豆作品',
+export const metadata: Metadata = {
+  title: '作品展示',
+  description: '探索来自拼豆工坊社区的精彩拼豆作品，发现创意灵感，分享拼豆创作的乐趣。',
+  openGraph: {
+    title: '作品展示 - 拼豆工坊',
+    description: '探索来自拼豆工坊社区的精彩拼豆作品',
+    type: 'website',
+  },
 };
 
 export default async function GalleryPage() {

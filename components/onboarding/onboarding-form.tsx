@@ -64,7 +64,7 @@ export default function OnboardingForm() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <CardTitle className="text-2xl">欢迎使用拼豆Studio</CardTitle>
+          <CardTitle className="text-2xl">欢迎使用拼豆工坊</CardTitle>
           <CardDescription className="text-base">
             选择您拥有的拼豆颜色系列，我们将为您初始化库存
           </CardDescription>

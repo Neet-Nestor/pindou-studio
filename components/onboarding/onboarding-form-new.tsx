@@ -141,7 +141,7 @@ export default function OnboardingFormNew() {
         }
       }
 
-      toast.success('设置完成！欢迎使用拼豆Studio');
+      toast.success('设置完成！欢迎使用拼豆工坊');
       router.push('/dashboard/inventory');
       router.refresh();
     } catch (error) {
