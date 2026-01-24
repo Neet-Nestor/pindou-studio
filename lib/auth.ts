@@ -26,31 +26,53 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const { email, password } = await loginSchema.parseAsync(credentials)
+        try {
+          const { email, password } = await loginSchema.parseAsync(credentials)
 
-        // Find user by email
-        const [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, email))
-          .limit(1)
+          console.log('[auth] Login attempt for email:', email)
 
-        if (!user || !user.password) {
+          // Find user by email
+          const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, email))
+            .limit(1)
+
+          if (!user) {
+            console.log('[auth] User not found:', email)
+            return null
+          }
+
+          if (!user.password) {
+            console.log('[auth] User has no password (OAuth user):', email)
+            return null
+          }
+
+          console.log('[auth] User found, verifying password...')
+          console.log('[auth] Stored hash length:', user.password?.length)
+          console.log('[auth] Input password length:', password?.length)
+
+          // Verify password
+          const isValidPassword = await bcrypt.compare(password, user.password)
+
+          console.log('[auth] Password validation result:', isValidPassword)
+
+          if (!isValidPassword) {
+            console.log('[auth] Invalid password for user:', email)
+            return null
+          }
+
+          console.log('[auth] Login successful for user:', email)
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          }
+        } catch (error) {
+          console.error('[auth] Authorization error:', error)
           return null
-        }
-
-        // Verify password
-        const isValidPassword = await bcrypt.compare(password, user.password)
-
-        if (!isValidPassword) {
-          return null
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
         }
       },
     }),

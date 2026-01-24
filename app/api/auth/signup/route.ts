@@ -32,12 +32,17 @@ export async function POST(request: Request) {
     }
 
     // Hash password
+    console.log('[signup] Hashing password for user:', email);
+    console.log('[signup] Password length:', password.length);
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('[signup] Hashed password length:', hashedPassword.length);
+    console.log('[signup] Hash starts with:', hashedPassword.substring(0, 7)); // Should be '$2a$10$' or '$2b$10$'
 
     // Ensure default colors are seeded
     await seedDefaultColors();
 
     // Create user
+    console.log('[signup] Creating user in database...');
     const [newUser] = await db
       .insert(users)
       .values({
@@ -46,6 +51,9 @@ export async function POST(request: Request) {
         password: hashedPassword,
       })
       .returning();
+
+    console.log('[signup] User created successfully:', newUser.email);
+    console.log('[signup] Stored password hash length:', newUser.password?.length);
 
     // Initialize user inventory with 221 default colors at quantity 0
     await initializeUserInventory(newUser.id);
