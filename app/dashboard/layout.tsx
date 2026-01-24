@@ -26,8 +26,8 @@ export default async function DashboardLayout({
         {/* Sidebar */}
         <Sidebar />
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
+        {/* Main Content Area - Add left margin for fixed sidebar */}
+        <div className="flex-1 flex flex-col md:ml-72 transition-all duration-500 ease-out">
           {/* Header */}
           <DashboardHeader
             onSignOut={handleSignOut}

@@ -11,7 +11,7 @@ export function Footer() {
             className="font-medium hover:text-primary transition-colors"
           >
             Neet-Nestor
-          </a> for <b>ccliu</b>
+          </a> for ccliu
           {' '}· 专为拼豆爱好者们打造
         </p>
         <p className="text-xs">

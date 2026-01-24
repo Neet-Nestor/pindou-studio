@@ -54,12 +54,12 @@ export function Sidebar() {
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          'hidden md:flex flex-col border-r bg-card backdrop-blur-xl transition-all duration-500 ease-out relative',
+          'hidden md:flex flex-col fixed top-0 left-0 h-screen border-r bg-card backdrop-blur-xl transition-all duration-500 ease-out z-40',
           collapsed ? 'w-[72px]' : 'w-72',
         )}
       >
         {/* Collapse Toggle */}
-        <div className="flex h-16 items-center justify-end px-5 border-b">
+        <div className="flex h-16 items-center justify-end px-5 border-b flex-shrink-0">
           <Button
             variant="ghost"
             size="icon"
@@ -76,7 +76,7 @@ export function Sidebar() {
 
         {/* Navigation Links */}
         <nav className={cn(
-          'flex-1 space-y-3',
+          'flex-1 space-y-3 overflow-y-auto',
           collapsed ? 'p-3' : 'p-5'
         )}>
           {navItems.map((item, index) => {
@@ -120,7 +120,7 @@ export function Sidebar() {
 
         {/* Bottom decoration */}
         {!collapsed && (
-          <div className="p-5 border-t">
+          <div className="p-5 border-t flex-shrink-0">
             <div className="p-4 rounded-xl bg-accent border">
               <p className="text-xs text-muted-foreground leading-relaxed">
                 💡 <span className="font-medium">小提示：</span>使用图纸库规划作品，完成后在我的作品中记录
