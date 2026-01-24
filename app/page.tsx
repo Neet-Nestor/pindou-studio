@@ -191,7 +191,7 @@ export default function Home() {
                 <div className="mx-auto h-20 w-20 bg-gradient-to-br from-accent to-accent/70 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                   <History className="h-10 w-10 text-white" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-accent-foreground font-handwritten">作品分享</CardTitle>
+                <CardTitle className="text-2xl font-bold text-accent font-handwritten">作品分享</CardTitle>
                 <CardDescription className="text-base pt-3">
                   记录创作历程，展示你的作品
                 </CardDescription>
@@ -311,7 +311,7 @@ export default function Home() {
             <Card className="border-2 hover:border-accent/50 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
                 <div className="h-12 w-12 bg-accent/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <History className="h-6 w-6 text-accent-foreground" />
+                  <History className="h-6 w-6 text-accent" />
                 </div>
                 <CardTitle className="text-lg">作品档案</CardTitle>
                 <CardDescription className="text-sm leading-relaxed pt-2">
@@ -323,7 +323,7 @@ export default function Home() {
             <Card className="border-2 hover:border-accent/50 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
                 <div className="h-12 w-12 bg-accent/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <Package className="h-6 w-6 text-accent-foreground" />
+                  <Package className="h-6 w-6 text-accent" />
                 </div>
                 <CardTitle className="text-lg">多图展示</CardTitle>
                 <CardDescription className="text-sm leading-relaxed pt-2">
@@ -335,7 +335,7 @@ export default function Home() {
             <Card className="border-2 hover:border-accent/50 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
                 <div className="h-12 w-12 bg-accent/10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <BarChart3 className="h-6 w-6 text-accent-foreground" />
+                  <BarChart3 className="h-6 w-6 text-accent" />
                 </div>
                 <CardTitle className="text-lg">创作统计</CardTitle>
                 <CardDescription className="text-sm leading-relaxed pt-2">
