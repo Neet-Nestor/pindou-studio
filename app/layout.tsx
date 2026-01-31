@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AnniversaryPopup } from "@/components/anniversary-popup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -108,6 +109,7 @@ export default function RootLayout({
           </div>
           <Footer />
           <Toaster />
+          <AnniversaryPopup />
           <Analytics />
           <SpeedInsights />
         </ThemeProvider>

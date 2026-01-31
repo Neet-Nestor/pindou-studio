@@ -17,6 +17,8 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
     "@fontsource/dm-sans": "^5.2.8",
+    "@fontsource/noto-sans-jp": "^5.2.9",
+    "@fontsource/noto-serif-jp": "^5.2.8",
     "@fontsource/zcool-qingke-huangyou": "^5.2.8",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-checkbox": "^1.3.3",

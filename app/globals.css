@@ -5,6 +5,16 @@
 @import '@fontsource/dm-sans/600.css';
 @import '@fontsource/dm-sans/700.css';
 
+/* Noto fonts for Anniversary Popup */
+@import '@fontsource/noto-sans-jp/300.css';
+@import '@fontsource/noto-sans-jp/400.css';
+@import '@fontsource/noto-sans-jp/500.css';
+@import '@fontsource/noto-sans-jp/700.css';
+@import '@fontsource/noto-serif-jp/400.css';
+@import '@fontsource/noto-serif-jp/500.css';
+@import '@fontsource/noto-serif-jp/600.css';
+@import '@fontsource/noto-serif-jp/700.css';
+
 @import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
@@ -137,3 +147,61 @@ body {
 [data-animate="4"] { animation-delay: 0.4s; }
 [data-animate="5"] { animation-delay: 0.5s; }
 [data-animate="6"] { animation-delay: 0.6s; }
+
+/* Anniversary Popup Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(-15px) translateX(10px); }
+}
+
+@keyframes float-slower {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(-10px) translateX(-15px); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  50% { transform: scale(1); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: float-slower 8s ease-in-out infinite;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-float-slow,
+  .animate-float-slower,
+  .animate-heartbeat,
+  .animate-pulse-slow {
+    animation: none;
+  }
+}
